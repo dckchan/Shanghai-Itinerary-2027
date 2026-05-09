@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上海家庭旅遊行程 — 2027年9月</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  :root {
+    --ink:#1a1410; --red:#c0392b; --gold:#c9943a; --gold-light:#e8c97a;
+    --cream:#faf6ef; --parchment:#f0e9d8; --warm-grey:#8a7f72;
+    --light-grey:#e8e0d4; --jade:#3a7d6b; --sky:#4a7fa5;
+    --day1:#c0392b; --day2:#c9943a; --day3:#2980b9;
+    --day4:#27ae60; --day5:#8e44ad; --day6:#e67e22; --day7:#16a085;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans','Noto Sans TC',sans-serif;background:var(--cream);color:var(--ink);line-height:1.7;}
+
+  .hero{background:var(--ink);position:relative;overflow:hidden;padding:72px 40px 52px;text-align:center;}
+  .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(192,57,43,.22) 0%,transparent 70%);}
+  .hero-label{position:relative;font-family:'Noto Serif SC',serif;color:var(--gold);font-size:13px;letter-spacing:4px;margin-bottom:14px;}
+  .hero h1{position:relative;font-family:'Playfair Display',serif;font-size:clamp(38px,7vw,72px);color:var(--cream);line-height:1.05;}
+  .hero h1 em{font-style:italic;color:var(--gold-light);}
+  .hero-cn{position:relative;font-family:'Noto Serif SC',serif;font-size:clamp(18px,3vw,26px);color:var(--gold);margin-top:8px;letter-spacing:6px;}
+  .hero-sub{position:relative;color:var(--warm-grey);font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-top:16px;margin-bottom:28px;}
+  .hero-badges{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+  .badge{background:rgba(255,255,255,.07);border:1px solid rgba(201,148,58,.35);color:var(--gold-light);font-size:12px;padding:5px 14px;border-radius:40px;}
+
+  .stats-strip{background:var(--red);color:white;padding:18px 40px;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:center;}
+  .stat{text-align:center;}
+  .stat-num{font-family:'Playfair Display',serif;font-size:26px;line-height:1;font-weight:700;}
+  .stat-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.85;}
+  .dot{color:rgba(255,255,255,.3);font-size:16px;}
+
+  .weather-bar{background:var(--parchment);border-bottom:1px solid var(--light-grey);padding:16px 40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
+  .wtag{font-size:12px;color:var(--warm-grey);display:flex;align-items:center;gap:6px;}
+
+  .container{max-width:1040px;margin:0 auto;padding:0 24px;}
+  .section{padding:52px 0 36px;}
+  .sec-hdr{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+  .sec-hdr h2{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;white-space:nowrap;}
+  .sec-hdr .cn{font-family:'Noto Serif SC',serif;font-size:14px;color:var(--gold);margin-left:4px;}
+  .sec-line{flex:1;height:1px;background:linear-gradient(to right,var(--gold),transparent);}
+
+  .place-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .place-table thead th{background:var(--ink);color:var(--gold-light);text-align:left;padding:10px 16px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:500;}
+  .place-table tbody tr{border-bottom:1px solid var(--light-grey);}
+  .place-table tbody tr:nth-child(even) td{background:rgba(240,233,216,.3);}
+  .place-table td{padding:10px 16px;background:white;}
+  .place-table td.en{font-weight:500;}
+  .place-table td.cn{font-family:'Noto Serif SC',serif;color:var(--red);font-size:14px;}
+  .place-table td.pinyin{color:var(--warm-grey);font-style:italic;font-size:12px;}
+  .type-pill{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:40px;text-transform:uppercase;}
+  .tp-sight{background:#e3f2fd;color:#0d47a1;}
+  .tp-food{background:#fce4ec;color:#880e4f;}
+  .tp-hotel{background:#fff3e0;color:#e65100;}
+  .tp-activity{background:#e8f5e9;color:#2e7d32;}
+  .tp-park{background:#f3e5f5;color:#4a148c;}
+  .tp-art{background:#e0f2f1;color:#004d40;}
+
+  .days-wrap{display:flex;flex-direction:column;gap:0;}
+  .day-card{background:white;border:1px solid var(--light-grey);border-top:none;overflow:hidden;}
+  .day-card:first-child{border-top:1px solid var(--light-grey);}
+  .day-hdr{display:grid;grid-template-columns:76px 1fr;align-items:stretch;cursor:pointer;transition:background .18s;}
+  .day-hdr:hover{background:var(--parchment);}
+  .day-num-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 0;border-right:3px solid;}
+  .day-num-col .n{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;line-height:1;}
+  .day-num-col .lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warm-grey);}
+  .day-info{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .day-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px;}
+  .day-title-cn{font-family:'Noto Serif SC',serif;font-size:12px;color:var(--warm-grey);}
+  .day-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+  .dtag{font-size:10px;letter-spacing:.5px;padding:2px 9px;border-radius:40px;text-transform:uppercase;}
+  .t-walk{background:#e8f5e9;color:#2e7d32;}
+  .t-culture{background:#fff3e0;color:#e65100;}
+  .t-food{background:#fce4ec;color:#880e4f;}
+  .t-modern{background:#e3f2fd;color:#0d47a1;}
+  .t-trip{background:#f3e5f5;color:#4a148c;}
+  .t-art{background:#e0f2f1;color:#004d40;}
+  .t-fun{background:#fff8e1;color:#f57f17;}
+  .t-relax{background:#efebe9;color:#3e2723;}
+  .chevron{font-size:18px;color:var(--warm-grey);transition:transform .3s;flex-shrink:0;}
+
+  .day-body{display:none;border-top:1px solid var(--light-grey);}
+  .day-body.open{display:block;}
+  .chevron.open{transform:rotate(180deg);}
+
+  /* MAP */
+  .map-wrap{position:relative;height:360px;background:#e8f0e0;}
+  .leaflet-map{width:100%;height:100%;}
+  .map-legend{position:absolute;bottom:10px;left:10px;background:white;border:1px solid var(--light-grey);padding:10px 14px;font-size:11px;max-width:240px;box-shadow:0 2px 8px rgba(0,0,0,.12);z-index:1000;pointer-events:none;}
+  .map-legend .leg-title{font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;color:var(--ink);}
+  .leg-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:4px;line-height:1.4;}
+  .leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+  .leg-txt{color:var(--ink);}
+  .leg-cn{color:var(--warm-grey);font-family:'Noto Sans TC',sans-serif;font-size:10px;}
+
+  /* SCHEDULE */
+  .schedule{padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;background:#fdfcfa;}
+  .block{border-left:3px solid;padding:14px 16px;background:white;}
+  .block.morning{border-color:#f39c12;}
+  .block.lunch{border-color:var(--jade);}
+  .block.afternoon{border-color:var(--red);}
+  .block.evening{border-color:#2c3e50;}
+  .blk-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:8px;font-weight:500;}
+  .blk-title{font-family:'Playfair Display',serif;font-size:14px;margin-bottom:6px;}
+  .blk-list{list-style:none;font-size:12.5px;color:#555;line-height:1.85;}
+  .blk-list li::before{content:'·';margin-right:6px;color:var(--gold);font-size:15px;}
+  .blk-list .cn-name{font-family:'Noto Serif SC',serif;color:var(--red);font-size:12px;}
+
+  .food-box{margin:0 24px 20px;background:var(--ink);color:white;padding:16px 18px;}
+  .food-ttl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;}
+  .food-items{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;}
+  .fi{font-size:11.5px;background:rgba(255,255,255,.08);border:1px solid rgba(201,148,58,.3);padding:3px 10px;border-radius:40px;color:var(--gold-light);}
+  .fi .cn{font-family:'Noto Serif SC',serif;}
+  .rest-list{font-size:12px;color:rgba(255,255,255,.5);}
+  .rest-list strong{color:rgba(255,255,255,.75);font-weight:500;}
+
+  .senior-tip{margin:0 24px 20px;background:#faf3e8;border:1px solid #e8d5a3;padding:12px 16px;display:flex;gap:8px;font-size:12.5px;color:#6b5c3e;}
+
+  .budget-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .budget-table th{background:var(--ink);color:var(--gold-light);text-align:left;padding:11px 18px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:500;}
+  .budget-table td{padding:11px 18px;border-bottom:1px solid var(--light-grey);background:white;}
+  .budget-table td:last-child{text-align:right;color:var(--jade);font-weight:500;}
+  .budget-table .total td{background:var(--parchment);font-weight:600;}
+  .budget-table .total td:last-child{color:var(--red);}
+
+  .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;}
+  .tip-card{background:white;border:1px solid var(--light-grey);padding:16px;font-size:12.5px;line-height:1.6;}
+  .tip-icon{font-size:20px;margin-bottom:6px;}
+  .tip-title{font-weight:600;margin-bottom:3px;color:var(--ink);}
+  .tip-card p{color:var(--warm-grey);}
+
+  footer{background:var(--ink);color:var(--warm-grey);text-align:center;padding:32px 24px;font-size:12px;}
+  footer .ftitle{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:18px;margin-bottom:6px;}
+
+  .tab-bar{display:flex;border-bottom:1px solid var(--light-grey);background:white;}
+  .tab-btn{flex:1;padding:11px 14px;font-size:12px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--warm-grey);border-bottom:2px solid transparent;transition:all .18s;}
+  .tab-btn.active{color:var(--ink);border-bottom-color:var(--red);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* Route line style for Leaflet */
+  .route-arrow{fill:none;stroke-width:3;stroke-dasharray:8,5;}
+
+  @media(max-width:620px){
+    .hero{padding:52px 18px 36px;}
+    .stats-strip{padding:14px 18px;gap:12px;}
+    .container{padding:0 14px;}
+    .schedule{grid-template-columns:1fr;}
+    .day-title{font-size:15px;}
+  }
+
+  /* ── PICKS PANEL ── */
+  .picks-container{padding:20px 24px 24px;background:#fdfcfa;}
+  .picks-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+  .picks-heading{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--ink);}
+  .picks-actions{display:flex;gap:8px;}
+  .btn-undo{background:var(--ink);color:var(--gold-light);border:none;padding:6px 14px;font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:2px;}
+  .btn-undo:hover{background:#333;}
+  .cat-block{margin-bottom:20px;}
+  .cat-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:var(--warm-grey);padding:8px 0 10px;border-bottom:1px solid var(--light-grey);margin-bottom:10px;}
+  .picks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:10px;}
+  .pick-card{background:white;border:1px solid var(--light-grey);padding:12px;font-size:12px;transition:border-color .15s;position:relative;}
+  .pick-card:hover{border-color:var(--gold);}
+  .pick-card.pick-added{border-color:var(--jade);background:#f0faf6;}
+  .pick-stars{font-size:11px;color:var(--gold);margin-bottom:4px;letter-spacing:1px;}
+  .pick-name{font-weight:600;font-size:12.5px;color:var(--ink);margin-bottom:2px;}
+  .pick-cn{font-family:'Noto Serif SC',serif;font-size:11px;color:var(--red);margin-bottom:4px;}
+  .pick-note{font-size:11px;color:var(--warm-grey);line-height:1.5;margin-bottom:5px;}
+  .pick-addr{font-size:10px;color:#aaa;margin-bottom:7px;}
+  .pick-btns{display:flex;gap:6px;}
+  .btn-add{background:var(--red);color:white;border:none;padding:4px 10px;font-size:10px;cursor:pointer;border-radius:2px;letter-spacing:.5px;}
+  .btn-add:hover{background:#a93226;}
+  .btn-remove{background:var(--jade);color:white;border:none;padding:4px 10px;font-size:10px;cursor:pointer;border-radius:2px;}
+  .btn-remove:hover{background:#2e6b5e;}
+  .my-list-block{background:var(--parchment);border:1px solid var(--light-grey);padding:12px;margin-top:4px;}
+  .my-list-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--jade);font-weight:600;margin-bottom:8px;}
+  .my-list-items{display:flex;flex-direction:column;gap:6px;}
+  .my-item{display:flex;justify-content:space-between;align-items:center;gap:8px;background:white;padding:7px 10px;border:1px solid var(--light-grey);font-size:12px;}
+  .my-item-name{flex:1;font-weight:500;color:var(--ink);}
+  .my-item-cn{font-family:'Noto Serif SC',serif;color:var(--red);font-size:11px;margin-left:4px;}
+  .my-item-actions{display:flex;gap:6px;align-items:center;}
+  .btn-modify{font-size:10px;padding:3px 8px;border:1px solid var(--light-grey);background:white;cursor:pointer;color:var(--ink);border-radius:2px;}
+  .btn-delete{background:none;border:1px solid #ddd;padding:3px 7px;cursor:pointer;font-size:12px;color:#c0392b;border-radius:2px;}
+  .btn-delete:hover{background:#fee;}
+
+  /* ── PHOTO MODAL ── */
+  #pin-photo-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .ppm-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7);}
+  .ppm-box{position:relative;background:white;max-width:620px;width:100%;border-radius:4px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .ppm-header{display:flex;justify-content:space-between;align-items:flex-start;padding:18px 20px 14px;background:var(--ink);}
+  .ppm-name{font-family:'Playfair Display',serif;font-size:18px;color:white;margin-bottom:2px;}
+  .ppm-cn{font-family:'Noto Serif SC',serif;font-size:13px;color:var(--gold);margin-bottom:6px;}
+  .ppm-addr{font-size:11px;color:rgba(255,255,255,.7);line-height:1.6;}
+  .ppm-addr-cn{font-family:'Noto Sans TC',sans-serif;color:rgba(255,255,255,.5);}
+  .ppm-gps{font-size:10px;color:var(--gold-light);margin-top:4px;font-family:monospace;letter-spacing:.5px;}
+  .ppm-close{background:rgba(255,255,255,.15);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0;margin-left:12px;}
+  .ppm-photo-wrap{position:relative;background:#111;}
+  .ppm-photo{width:100%;height:240px;object-fit:cover;display:block;}
+  .ppm-photo-label{position:absolute;bottom:8px;right:10px;font-size:10px;color:rgba(255,255,255,.7);background:rgba(0,0,0,.5);padding:2px 8px;border-radius:2px;}
+  .ppm-links{display:flex;gap:8px;padding:14px 18px;background:var(--parchment);flex-wrap:wrap;}
+  .ppm-link{font-size:11px;color:var(--red);text-decoration:none;background:white;border:1px solid var(--light-grey);padding:5px 12px;border-radius:2px;letter-spacing:.5px;}
+  .ppm-link:hover{background:var(--ink);color:var(--gold-light);}
+
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-label">多代家庭旅遊行程 · Multigenerational Family Itinerary</div>
+  <h1><em>Shanghai</em></h1>
+  <div class="hero-cn">上海 · 2027年九月</div>
+  <div class="hero-sub">7 Days · 4 Adults + 2 Seniors · September 2027</div>
+  <div class="hero-badges">
+    <span class="badge">🌤 22–30°C</span>
+    <span class="badge">🏨 靜安區 Jing'an Base</span>
+    <span class="badge">🚇 地鐵友善 Metro-Friendly</span>
+    <span class="badge">🍜 滬式料理 Shanghainese Cuisine</span>
+  </div>
+</header>
+
+<div style="background:var(--ink);text-align:center;padding:7px 20px;border-top:1px solid rgba(201,148,58,0.25);">
+  <span style="font-family:'Noto Serif SC',serif;color:var(--gold);font-size:12px;letter-spacing:3px;">Produced by D. Chan &nbsp;·&nbsp; 2026</span>
+  &nbsp;&nbsp;
+  <a id="pdf-dl-btn" href="#" onclick="downloadPDF()" style="font-size:11px;color:var(--gold-light);background:rgba(201,148,58,0.15);border:1px solid rgba(201,148,58,0.4);padding:3px 14px;border-radius:40px;text-decoration:none;letter-spacing:1px;cursor:pointer;">⬇ Download PDF Summary</a>
+</div>
+<div class="stats-strip">
+  <div class="stat"><div class="stat-num">7</div><div class="stat-label">天 Days</div></div>
+  <div class="dot">·</div>
+  <div class="stat"><div class="stat-num">6</div><div class="stat-label">旅客 Travellers</div></div>
+  <div class="dot">·</div>
+  <div class="stat"><div class="stat-num">Sep</div><div class="stat-label">最佳月份</div></div>
+  <div class="dot">·</div>
+  <div class="stat"><div class="stat-num">~$8K</div><div class="stat-label">CAD 預算</div></div>
+</div>
+
+<div class="weather-bar">
+  <div class="wtag">🌡️ 22–30°C 九月溫度</div>
+  <div class="wtag">🌧️ 偶有驟雨，備輕薄雨衣</div>
+  <div class="wtag">☀️ 九月下旬天空較晴朗</div>
+  <div class="wtag">💧 午後潮濕，宜安排室內活動</div>
+</div>
+
+<main>
+<div class="container">
+
+  <!-- PLACE REFERENCE TABLE -->
+  <section class="section">
+    <div class="sec-hdr">
+      <h2>Place Reference <span class="cn">地點名稱對照</span></h2>
+      <div class="sec-line"></div>
+    </div>
+    <p style="font-size:13px;color:var(--warm-grey);margin-bottom:18px;">Traditional Chinese names for all attractions, restaurants &amp; hotels — show this to taxi drivers or use in DiDi app.</p>
+    <table class="place-table">
+      <thead><tr><th>English Name</th><th>繁體中文</th><th>拼音 Pinyin</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td class="en">The Bund</td><td class="cn">外灘</td><td class="pinyin">Wài Tān</td><td><span class="type-pill tp-sight">Landmark</span></td></tr>
+        <tr><td class="en">Yu Garden</td><td class="cn">豫園</td><td class="pinyin">Yù Yuán</td><td><span class="type-pill tp-sight">Garden</span></td></tr>
+        <tr><td class="en">City God Temple</td><td class="cn">城隍廟</td><td class="pinyin">Chéng Huáng Miào</td><td><span class="type-pill tp-sight">Temple</span></td></tr>
+        <tr><td class="en">Shanghai Museum</td><td class="cn">上海博物館</td><td class="pinyin">Shànghǎi Bówùguǎn</td><td><span class="type-pill tp-sight">Museum</span></td></tr>
+        <tr><td class="en">Nanjing Road (Pedestrian)</td><td class="cn">南京路步行街</td><td class="pinyin">Nánjīng Lù Bùxíng Jiē</td><td><span class="type-pill tp-sight">Street</span></td></tr>
+        <tr><td class="en">Shanghai Tower</td><td class="cn">上海中心大廈</td><td class="pinyin">Shànghǎi Zhōngxīn Dàshà</td><td><span class="type-pill tp-sight">Skyscraper</span></td></tr>
+        <tr><td class="en">Oriental Pearl Tower</td><td class="cn">東方明珠塔</td><td class="pinyin">Dōngfāng Míngzhū Tǎ</td><td><span class="type-pill tp-sight">Tower</span></td></tr>
+        <tr><td class="en">Lujiazui Central Green</td><td class="cn">陸家嘴中心綠地</td><td class="pinyin">Lùjiāzuǐ Zhōngxīn Lǜdì</td><td><span class="type-pill tp-park">Park</span></td></tr>
+        <tr><td class="en">Shanghai Ocean Aquarium</td><td class="cn">上海海洋水族館</td><td class="pinyin">Shànghǎi Hǎiyáng Shuǐzúguǎn</td><td><span class="type-pill tp-activity">Aquarium</span></td></tr>
+        <tr><td class="en">Zhujiajiao Water Town</td><td class="cn">朱家角古鎮</td><td class="pinyin">Zhūjiājiǎo Gǔzhèn</td><td><span class="type-pill tp-sight">Day Trip</span></td></tr>
+        <tr><td class="en">French Concession</td><td class="cn">法租界</td><td class="pinyin">Fǎ Zūjiè</td><td><span class="type-pill tp-sight">District</span></td></tr>
+        <tr><td class="en">Wukang Road</td><td class="cn">武康路</td><td class="pinyin">Wǔkāng Lù</td><td><span class="type-pill tp-sight">Street</span></td></tr>
+        <tr><td class="en">Tianzifang</td><td class="cn">田子坊</td><td class="pinyin">Tiánzǐfāng</td><td><span class="type-pill tp-art">Arts</span></td></tr>
+        <tr><td class="en">Jing'an Temple</td><td class="cn">靜安寺</td><td class="pinyin">Jìng'ān Sì</td><td><span class="type-pill tp-sight">Temple</span></td></tr>
+        <tr><td class="en">People's Park</td><td class="cn">人民公園</td><td class="pinyin">Rénmín Gōngyuán</td><td><span class="type-pill tp-park">Park</span></td></tr>
+        <tr><td class="en">Xintiandi</td><td class="cn">新天地</td><td class="pinyin">Xīntiāndì</td><td><span class="type-pill tp-sight">District</span></td></tr>
+        <tr><td class="en">Shanghai Disneyland</td><td class="cn">上海迪士尼樂園</td><td class="pinyin">Shànghǎi Dísìní Lèyuán</td><td><span class="type-pill tp-activity">Theme Park</span></td></tr>
+        <tr><td class="en">Huangpu River</td><td class="cn">黃浦江</td><td class="pinyin">Huángpǔ Jiāng</td><td><span class="type-pill tp-sight">Waterway</span></td></tr>
+        <tr><td class="en">Pudong District</td><td class="cn">浦東新區</td><td class="pinyin">Pǔdōng Xīnqū</td><td><span class="type-pill tp-sight">District</span></td></tr>
+        <tr><td class="en">Jing'an District</td><td class="cn">靜安區</td><td class="pinyin">Jìng'ān Qū</td><td><span class="type-pill tp-sight">District</span></td></tr>
+        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--warm-grey);font-weight:500;">🍽️ Restaurants 餐廳</td></tr>
+        <tr><td class="en">Din Tai Fung</td><td class="cn">鼎泰豐</td><td class="pinyin">Dǐng Tài Fēng</td><td><span class="type-pill tp-food">Taiwanese</span></td></tr>
+        <tr><td class="en">Lost Heaven</td><td class="cn">花馬天堂</td><td class="pinyin">Huā Mǎ Tiāntáng</td><td><span class="type-pill tp-food">Yunnan</span></td></tr>
+        <tr><td class="en">Crystal Jade</td><td class="cn">翡翠酒家</td><td class="pinyin">Fěicuì Jiǔjiā</td><td><span class="type-pill tp-food">Cantonese</span></td></tr>
+        <tr><td class="en">Da Dong Roast Duck</td><td class="cn">大董烤鴨店</td><td class="pinyin">Dà Dǒng Kǎoyā Diàn</td><td><span class="type-pill tp-food">Beijing</span></td></tr>
+        <tr><td class="en">Fu He Hui</td><td class="cn">福和慧</td><td class="pinyin">Fú Hé Huì</td><td><span class="type-pill tp-food">Vegetarian</span></td></tr>
+        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--warm-grey);font-weight:500;">🏨 Hotels 酒店</td></tr>
+        <tr><td class="en">The Peninsula Shanghai</td><td class="cn">上海半島酒店</td><td class="pinyin">Shànghǎi Bàndǎo Jiǔdiàn</td><td><span class="type-pill tp-hotel">Luxury</span></td></tr>
+        <tr><td class="en">Fairmont Peace Hotel</td><td class="cn">和平飯店</td><td class="pinyin">Hépíng Fàndiàn</td><td><span class="type-pill tp-hotel">Luxury</span></td></tr>
+        <tr><td class="en">Central Hotel Shanghai</td><td class="cn">上海中心大酒店</td><td class="pinyin">Shànghǎi Zhōngxīn Dà Jiǔdiàn</td><td><span class="type-pill tp-hotel">Mid-Range</span></td></tr>
+        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--warm-grey);font-weight:500;">🍜 Key Dishes 特色菜餚</td></tr>
+        <tr><td class="en">Xiaolongbao (Soup Dumplings)</td><td class="cn">小籠包</td><td class="pinyin">Xiǎolóng Bāo</td><td><span class="type-pill tp-food">Must Try</span></td></tr>
+        <tr><td class="en">Shengjianbao (Pan-fried Dumplings)</td><td class="cn">生煎包</td><td class="pinyin">Shēngjiān Bāo</td><td><span class="type-pill tp-food">Must Try</span></td></tr>
+        <tr><td class="en">Red-braised Pork</td><td class="cn">紅燒肉</td><td class="pinyin">Hóngshāo Ròu</td><td><span class="type-pill tp-food">Classic</span></td></tr>
+        <tr><td class="en">Drunken Chicken</td><td class="cn">醉雞</td><td class="pinyin">Zuì Jī</td><td><span class="type-pill tp-food">Classic</span></td></tr>
+        <tr><td class="en">Hairy Crab</td><td class="cn">大閘蟹</td><td class="pinyin">Dà Zhá Xiè</td><td><span class="type-pill tp-food">Seasonal</span></td></tr>
+        <tr><td class="en">Peking Duck</td><td class="cn">北京烤鴨</td><td class="pinyin">Běijīng Kǎoyā</td><td><span class="type-pill tp-food">Classic</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 7-DAY ITINERARY -->
+  <section class="section" style="padding-top:0;">
+    <div class="sec-hdr">
+      <h2>7-Day Itinerary <span class="cn">七日行程</span></h2>
+      <div class="sec-line"></div>
+    </div>
+    <p style="font-size:13px;color:var(--warm-grey);margin-bottom:22px;">Click any day to expand the route map and full schedule ↓</p>
+
+    <div class="days-wrap">
+
+      <!-- DAY 1 -->
+      <div class="day-card">
+        <div class="day-hdr" onclick="toggleDay(this)">
+          <div class="day-num-col" style="border-color:var(--day1);color:var(--day1);">
+            <span class="n">1</span><span class="lbl">Day</span>
+          </div>
+          <div class="day-info">
+            <div>
+              <div class="day-title">Arrival + Bund Evening</div>
+              <div class="day-title-cn">抵滬 · 外灘夜景</div>
+              <div class="day-tags"><span class="dtag t-walk">Walking</span><span class="dtag t-food">Dinner</span></div>
+            </div>
+            <span class="chevron">↓</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'map')">🗺 Route Map 路線圖</button>
+            <button class="tab-btn" onclick="switchTab(this,'sched')">📋 Schedule 行程</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="map-wrap">
+              <div id="map-d1" class="leaflet-map"></div>
+              <div class="map-legend">
+                <div class="leg-title">Day 1 — 第一天路線</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#c0392b"></div><div><span class="leg-txt">① Hotel Base 酒店（人民廣場/靜安區）</span><br><span class="leg-cn">入住酒店休息</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#e74c3c"></div><div><span class="leg-txt">② The Bund 外灘</span><br><span class="leg-cn">傍晚漫步</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#922b21"></div><div><span class="leg-txt">③ Huangpu River Cruise 黃浦江遊船</span><br><span class="leg-cn">日落遊船</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="schedule">
+              <div class="block morning">
+                <div class="blk-label">Arrival 抵達</div>
+                <div class="blk-title">Hotel Check-In</div>
+                <ul class="blk-list">
+                  <li>Arrive at 浦東機場 Pudong or 虹橋機場 Hongqiao</li>
+                  <li>Check-in — rest and freshen up</li>
+                  <li>Light lunch near hotel</li>
+                </ul>
+              </div>
+              <div class="block evening">
+                <div class="blk-label">Evening 傍晚</div>
+                <div class="blk-title">外灘 The Bund</div>
+                <ul class="blk-list">
+                  <li>Walk the Bund promenade <span class="cn-name">外灘步行道</span></li>
+                  <li>View Lujiazui skyline <span class="cn-name">陸家嘴天際線</span></li>
+                  <li>Optional: 黃浦江遊船 Huangpu River sunset cruise</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="food-box">
+            <div class="food-ttl">🍽️ Welcome Dinner 歡迎晚餐</div>
+            <div class="food-items">
+              <span class="fi"><span class="cn">小籠包</span> Xiaolongbao</span>
+              <span class="fi"><span class="cn">紅燒肉</span> Red-braised Pork</span>
+              <span class="fi"><span class="cn">醉雞</span> Drunken Chicken</span>
+            </div>
+            <div class="rest-list"><strong>推薦餐廳:</strong> 鼎泰豐 Din Tai Fung · 花馬天堂 Lost Heaven · Pace</div>
+          </div>
+          <div class="senior-tip">🧓 Easy arrival day — minimal walking. Perfect recovery from long-haul flight. 輕鬆抵達日，適合長途飛行後的恢復。</div>
+          <div class="tab-panel picks-tab-panel" data-day="d1">{}</div>
+        </div>
+      </div>
+
+      <!-- DAY 2 -->
+      <div class="day-card">
+        <div class="day-hdr" onclick="toggleDay(this)">
+          <div class="day-num-col" style="border-color:var(--day2);color:var(--day2);">
+            <span class="n">2</span><span class="lbl">Day</span>
+          </div>
+          <div class="day-info">
+            <div>
+              <div class="day-title">Old Shanghai + Yu Garden + Museum</div>
+              <div class="day-title-cn">老上海 · 豫園 · 上海博物館</div>
+              <div class="day-tags"><span class="dtag t-culture">Culture</span><span class="dtag t-walk">Walking</span><span class="dtag t-food">Local Food</span></div>
+            </div>
+            <span class="chevron">↓</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'map')">🗺 Route Map 路線圖</button>
+            <button class="tab-btn" onclick="switchTab(this,'sched')">📋 Schedule 行程</button>
+            <button class="tab-btn" onclick="switchTab(this,'picks')">⭐ Critic's Picks 精選</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="map-wrap">
+              <div id="map-d2" class="leaflet-map"></div>
+              <div class="map-legend">
+                <div class="leg-title">Day 2 — 第二天路線</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#c9943a"></div><div><span class="leg-txt">① Yu Garden 豫園</span><br><span class="leg-cn">明代古典園林</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#f39c12"></div><div><span class="leg-txt">② City God Temple 城隍廟</span><br><span class="leg-cn">老城廟會區</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#e67e22"></div><div><span class="leg-txt">③ Shanghai Museum 上海博物館</span><br><span class="leg-cn">人民廣場</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#d35400"></div><div><span class="leg-txt">④ Nanjing Road 南京路步行街</span><br><span class="leg-cn">夜間購物街</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="schedule">
+              <div class="block morning">
+                <div class="blk-label">Morning 上午</div>
+                <div class="blk-title">豫園 Yu Garden</div>
+                <ul class="blk-list">
+                  <li>Yu Garden <span class="cn-name">豫園</span> — Ming Dynasty classic</li>
+                  <li>City God Temple <span class="cn-name">城隍廟</span></li>
+                  <li>Tea houses <span class="cn-name">茶樓</span> &amp; lantern streets</li>
+                  <li>Sample street snacks <span class="cn-name">街頭小吃</span></li>
+                </ul>
+              </div>
+              <div class="block lunch">
+                <div class="blk-label">Lunch 午餐</div>
+                <div class="blk-title">Old Town Cuisine 老城廂美食</div>
+                <ul class="blk-list">
+                  <li>生煎包 Shengjianbao</li>
+                  <li>蟹粉麵 Crab noodles</li>
+                  <li>糯米甜品 Sticky rice desserts</li>
+                </ul>
+              </div>
+              <div class="block afternoon">
+                <div class="blk-label">Afternoon 下午</div>
+                <div class="blk-title">上海博物館 Shanghai Museum</div>
+                <ul class="blk-list">
+                  <li>Ancient bronzes <span class="cn-name">青銅器</span> &amp; calligraphy <span class="cn-name">書法</span></li>
+                  <li>Chinese ceramics <span class="cn-name">陶瓷</span> galleries</li>
+                  <li>Air-conditioned — perfect for afternoon heat</li>
+                </ul>
+              </div>
+              <div class="block evening">
+                <div class="blk-label">Evening 晚間</div>
+                <div class="blk-title">南京路 Nanjing Road</div>
+                <ul class="blk-list">
+                  <li>Stroll 南京路步行街 pedestrian street</li>
+                  <li>Optional: Acrobatics show <span class="cn-name">雜技表演</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel picks-tab-panel" data-day="d2">{}</div>
+        </div>
+      </div>
+
+      <!-- DAY 3 -->
+      <div class="day-card">
+        <div class="day-hdr" onclick="toggleDay(this)">
+          <div class="day-num-col" style="border-color:var(--day3);color:var(--day3);">
+            <span class="n">3</span><span class="lbl">Day</span>
+          </div>
+          <div class="day-info">
+            <div>
+              <div class="day-title">Modern Shanghai + Pudong Skyline</div>
+              <div class="day-title-cn">現代上海 · 浦東天際線</div>
+              <div class="day-tags"><span class="dtag t-modern">Skyline</span><span class="dtag t-walk">Views</span></div>
+            </div>
+            <span class="chevron">↓</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'map')">🗺 Route Map 路線圖</button>
+            <button class="tab-btn" onclick="switchTab(this,'sched')">📋 Schedule 行程</button>
+            <button class="tab-btn" onclick="switchTab(this,'picks')">⭐ Critic's Picks 精選</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="map-wrap">
+              <div id="map-d3" class="leaflet-map"></div>
+              <div class="map-legend">
+                <div class="leg-title">Day 3 — 浦東巡遊</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#2980b9"></div><div><span class="leg-txt">① Shanghai Tower 上海中心大廈</span><br><span class="leg-cn">118F觀景台</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#3498db"></div><div><span class="leg-txt">② Oriental Pearl 東方明珠塔</span><br><span class="leg-cn">地標塔</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#1abc9c"></div><div><span class="leg-txt">③ Ocean Aquarium 海洋水族館</span><br><span class="leg-cn">室內避暑</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#16a085"></div><div><span class="leg-txt">④ Lujiazui Green 陸家嘴綠地</span><br><span class="leg-cn">濱江散步</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#2c3e50"></div><div><span class="leg-txt">⑤ The Bund 外灘 (night 夜景)</span><br><span class="leg-cn">夜間攝影</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="schedule">
+              <div class="block morning">
+                <div class="blk-label">Morning 上午</div>
+                <div class="blk-title">浦東摩天樓</div>
+                <ul class="blk-list">
+                  <li>上海中心大廈 Shanghai Tower — 118F deck</li>
+                  <li>東方明珠塔 Oriental Pearl Tower</li>
+                  <li>September skies often clearest after rains</li>
+                </ul>
+              </div>
+              <div class="block lunch">
+                <div class="blk-label">Lunch 午餐</div>
+                <div class="blk-title">景觀餐廳 Skyline Dining</div>
+                <ul class="blk-list">
+                  <li>翡翠酒家 Crystal Jade</li>
+                  <li>鼎泰豐 Din Tai Fung (IFC Mall)</li>
+                </ul>
+              </div>
+              <div class="block afternoon">
+                <div class="blk-label">Afternoon 下午</div>
+                <div class="blk-title">陸家嘴 Lujiazui</div>
+                <ul class="blk-list">
+                  <li>陸家嘴中心綠地 Lujiazui Central Green</li>
+                  <li>上海海洋水族館 Ocean Aquarium (optional)</li>
+                </ul>
+              </div>
+              <div class="block evening">
+                <div class="blk-label">Evening 晚間</div>
+                <div class="blk-title">外灘夜攝 Bund Night Shots</div>
+                <ul class="blk-list">
+                  <li>Golden hour to blue hour across the river</li>
+                  <li>Full skyline illumination at dusk</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="senior-tip">🧓 All towers have elevators — no stairs. Take DiDi 滴滴 taxi from Pudong back to hotel. 各大樓均設電梯，建議的士返回酒店。</div>
+          <div class="tab-panel picks-tab-panel" data-day="d3">{}</div>
+        </div>
+      </div>
+
+      <!-- DAY 4 -->
+      <div class="day-card">
+        <div class="day-hdr" onclick="toggleDay(this)">
+          <div class="day-num-col" style="border-color:var(--day4);color:var(--day4);">
+            <span class="n">4</span><span class="lbl">Day</span>
+          </div>
+          <div class="day-info">
+            <div>
+              <div class="day-title">Zhujiajiao Water Town Day Trip</div>
+              <div class="day-title-cn">朱家角古鎮一日遊</div>
+              <div class="day-tags"><span class="dtag t-trip">Day Trip</span><span class="dtag t-culture">Historic</span><span class="dtag t-relax">Senior Friendly</span></div>
+            </div>
+            <span class="chevron">↓</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'map')">🗺 Route Map 路線圖</button>
+            <button class="tab-btn" onclick="switchTab(this,'sched')">📋 Schedule 行程</button>
+            <button class="tab-btn" onclick="switchTab(this,'picks')">⭐ Critic's Picks 精選</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="map-wrap">
+              <div id="map-d4" class="leaflet-map"></div>
+              <div class="map-legend">
+                <div class="leg-title">Day 4 — 朱家角古鎮</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#27ae60"></div><div><span class="leg-txt">① Zhujiajiao 朱家角古鎮</span><br><span class="leg-cn">入口廣場</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#2ecc71"></div><div><span class="leg-txt">② Fangsheng Bridge 放生橋</span><br><span class="leg-cn">五孔古石橋</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#82e0aa"></div><div><span class="leg-txt">③ Canal Boat Dock 遊船碼頭</span><br><span class="leg-cn">搖橹船出發點</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#1e8449"></div><div><span class="leg-txt">④ Tea House Area 茶館區</span><br><span class="leg-cn">臨水茶館休息</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="schedule">
+              <div class="block morning">
+                <div class="blk-label">Morning 上午</div>
+                <div class="blk-title">朱家角 Ancient Town</div>
+                <ul class="blk-list">
+                  <li>Ancient stone bridges <span class="cn-name">古石橋</span> over canals</li>
+                  <li>搖橹船 Canal gondola boat ride</li>
+                  <li>Traditional 茶館 tea houses</li>
+                  <li>放生橋 Fangsheng Bridge — 5-arch landmark</li>
+                </ul>
+              </div>
+              <div class="block lunch">
+                <div class="blk-label">Lunch 午餐</div>
+                <div class="blk-title">水鄉美食 Local Food</div>
+                <ul class="blk-list">
+                  <li>河蝦 River shrimp — freshwater catch</li>
+                  <li>粽子 Bamboo-wrapped glutinous rice</li>
+                  <li>豆腐花 Silken tofu dessert</li>
+                </ul>
+              </div>
+              <div class="block afternoon">
+                <div class="blk-label">Return 返程</div>
+                <div class="blk-title">回上海 Back to Shanghai</div>
+                <ul class="blk-list">
+                  <li>Head back by mid-afternoon</li>
+                  <li>Rest at hotel for seniors</li>
+                  <li>Optional rooftop drinks for adults</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="senior-tip">🧓 朱家角 is ideal for seniors — flat walking, frequent benches, boat rides minimise strain. 地勢平坦，休息點多，最適合長者。</div>
+          <div class="tab-panel picks-tab-panel" data-day="d4">{}</div>
+        </div>
+      </div>
+
+      <!-- DAY 5 -->
+      <div class="day-card">
+        <div class="day-hdr" onclick="toggleDay(this)">
+          <div class="day-num-col" style="border-color:var(--day5);color:var(--day5);">
+            <span class="n">5</span><span class="lbl">Day</span>
+          </div>
+          <div class="day-info">
+            <div>
+              <div class="day-title">French Concession + Art &amp; Café Culture</div>
+              <div class="day-title-cn">法租界 · 藝術 · 咖啡文化</div>
+              <div class="day-tags"><span class="dtag t-art">Art</span><span class="dtag t-walk">Café Stroll</span><span class="dtag t-culture">Culture</span></div>
+            </div>
+            <span class="chevron">↓</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'map')">🗺 Route Map 路線圖</button>
+            <button class="tab-btn" onclick="switchTab(this,'sched')">📋 Schedule 行程</button>
+            <button class="tab-btn" onclick="switchTab(this,'picks')">⭐ Critic's Picks 精選</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="map-wrap">
+              <div id="map-d5" class="leaflet-map"></div>
+              <div class="map-legend">
+                <div class="leg-title">Day 5 — 法租界漫步</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#8e44ad"></div><div><span class="leg-txt">① Wukang Road 武康路</span><br><span class="leg-cn">梧桐林蔭大道</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#9b59b6"></div><div><span class="leg-txt">② Anfu Road 安福路</span><br><span class="leg-cn">精品店及畫廊</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#a569bd"></div><div><span class="leg-txt">③ Tianzifang 田子坊</span><br><span class="leg-cn">創意藝術弄堂</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#6c3483"></div><div><span class="leg-txt">④ Peace Hotel 和平飯店</span><br><span class="leg-cn">百年爵士樂</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="schedule">
+              <div class="block morning">
+                <div class="blk-label">Morning 上午</div>
+                <div class="blk-title">法租界 French Concession</div>
+                <ul class="blk-list">
+                  <li>武康路 Wukang Road — tree-lined boulevard</li>
+                  <li>安福路 Anfu Road boutiques &amp; galleries</li>
+                  <li>Shaded walks ideal for all ages</li>
+                </ul>
+              </div>
+              <div class="block lunch">
+                <div class="blk-label">Brunch 早午餐</div>
+                <div class="blk-title">咖啡廳早午餐</div>
+                <ul class="blk-list">
+                  <li>Egg / Polux by Paul Pairet</li>
+                  <li>Stylish French-inspired cafés abound</li>
+                </ul>
+              </div>
+              <div class="block afternoon">
+                <div class="blk-label">Afternoon 下午</div>
+                <div class="blk-title">田子坊 Tianzifang</div>
+                <ul class="blk-list">
+                  <li>Art studios <span class="cn-name">工作室</span> &amp; craft shops</li>
+                  <li>茶行 Tea shops &amp; handmade souvenirs</li>
+                  <li>Winding alley <span class="cn-name">弄堂</span> exploration</li>
+                </ul>
+              </div>
+              <div class="block evening">
+                <div class="blk-label">Evening 晚間</div>
+                <div class="blk-title">表演之夜 Performance</div>
+                <ul class="blk-list">
+                  <li>和平飯店 Peace Hotel Jazz Bar</li>
+                  <li>Traditional Chinese performance <span class="cn-name">傳統戲曲</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel picks-tab-panel" data-day="d5">{}</div>
+        </div>
+      </div>
+
+      <!-- DAY 6 -->
+      <div class="day-card">
+        <div class="day-hdr" onclick="toggleDay(this)">
+          <div class="day-num-col" style="border-color:var(--day6);color:var(--day6);">
+            <span class="n">6</span><span class="lbl">Day</span>
+          </div>
+          <div class="day-info">
+            <div>
+              <div class="day-title">Disneyland or Flexible Cultural Day</div>
+              <div class="day-title-cn">迪士尼 或 文化慢活日</div>
+              <div class="day-tags"><span class="dtag t-fun">Family Fun</span><span class="dtag t-relax">Flexible</span></div>
+            </div>
+            <span class="chevron">↓</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'map')">🗺 Route Map 路線圖</button>
+            <button class="tab-btn" onclick="switchTab(this,'sched')">📋 Schedule 行程</button>
+            <button class="tab-btn" onclick="switchTab(this,'picks')">⭐ Critic's Picks 精選</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="map-wrap">
+              <div id="map-d6" class="leaflet-map"></div>
+              <div class="map-legend">
+                <div class="leg-title">Day 6 — Two Options</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#e67e22"></div><div><span class="leg-txt">Option A: Disneyland 上海迪士尼樂園</span><br><span class="leg-cn">浦東川沙</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#f39c12"></div><div><span class="leg-txt">Option B: Xintiandi 新天地</span><br><span class="leg-cn">文化休閒區</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#d68910"></div><div><span class="leg-txt">Option B: Jing'an Temple 靜安寺</span><br><span class="leg-cn">茶道 · 水療</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="schedule">
+              <div class="block morning">
+                <div class="blk-label">Option A 方案一</div>
+                <div class="blk-title">🏰 上海迪士尼 Disneyland</div>
+                <ul class="blk-list">
+                  <li>Use Premier Access 優先通行證</li>
+                  <li>TRON Lightcycle — top-rated ride</li>
+                  <li>Night fireworks 夜間煙火</li>
+                  <li>Seniors relax at shaded lounges during waits</li>
+                </ul>
+              </div>
+              <div class="block afternoon">
+                <div class="blk-label">Option B 方案二</div>
+                <div class="blk-title">🍵 文化慢活 Slow Day</div>
+                <ul class="blk-list">
+                  <li>茶道 Traditional tea ceremony</li>
+                  <li>水療 Spa and massage</li>
+                  <li>新天地 Xintiandi stroll</li>
+                  <li>Cooking class 烹飪課 or river cruise 遊船</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="senior-tip">🧓 Option B strongly recommended if seniors show fatigue. A spa day at 靜安區 refreshes everyone before the final day. 如長者感疲勞，水療慢活日是最佳選擇。</div>
+          <div class="tab-panel picks-tab-panel" data-day="d6">{}</div>
+        </div>
+      </div>
+
+      <!-- DAY 7 -->
+      <div class="day-card">
+        <div class="day-hdr" onclick="toggleDay(this)">
+          <div class="day-num-col" style="border-color:var(--day7);color:var(--day7);">
+            <span class="n">7</span><span class="lbl">Day</span>
+          </div>
+          <div class="day-info">
+            <div>
+              <div class="day-title">Parks + Farewell Lunch + Departure</div>
+              <div class="day-title-cn">公園漫步 · 告別午宴 · 啟程</div>
+              <div class="day-tags"><span class="dtag t-relax">Relaxed</span><span class="dtag t-food">Farewell</span><span class="dtag t-walk">Parks</span></div>
+            </div>
+            <span class="chevron">↓</span>
+          </div>
+        </div>
+        <div class="day-body">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab(this,'map')">🗺 Route Map 路線圖</button>
+            <button class="tab-btn" onclick="switchTab(this,'sched')">📋 Schedule 行程</button>
+            <button class="tab-btn" onclick="switchTab(this,'picks')">⭐ Critic's Picks 精選</button>
+          </div>
+          <div class="tab-panel active">
+            <div class="map-wrap">
+              <div id="map-d7" class="leaflet-map"></div>
+              <div class="map-legend">
+                <div class="leg-title">Day 7 — 告別路線</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#16a085"></div><div><span class="leg-txt">① Jing'an Temple 靜安寺</span><br><span class="leg-cn">晨間祈福</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#1abc9c"></div><div><span class="leg-txt">② People's Park 人民公園</span><br><span class="leg-cn">最後散步</span></div></div>
+                <div class="leg-item"><div class="leg-dot" style="background:#148f77"></div><div><span class="leg-txt">③ Farewell Lunch 告別午宴</span><br><span class="leg-cn">大董烤鴨 / 福和慧</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-panel">
+            <div class="schedule">
+              <div class="block morning">
+                <div class="blk-label">Morning 上午</div>
+                <div class="blk-title">靜安寺 + 人民公園</div>
+                <ul class="blk-list">
+                  <li>靜安寺 Jing'an Temple — morning tranquility</li>
+                  <li>人民公園 People's Park — final stroll</li>
+                  <li>Last-minute shopping or coffee</li>
+                </ul>
+              </div>
+              <div class="block lunch">
+                <div class="blk-label">Farewell 告別</div>
+                <div class="blk-title">上海大宴 Grand Farewell</div>
+                <ul class="blk-list">
+                  <li>北京烤鴨 Peking Duck banquet</li>
+                  <li>點心 Dim Sum feast</li>
+                  <li>大閘蟹 Hairy Crab (seasonal, if available)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="food-box">
+            <div class="food-ttl">🍽️ Farewell Feast 告別大餐</div>
+            <div class="food-items">
+              <span class="fi"><span class="cn">北京烤鴨</span> Peking Duck</span>
+              <span class="fi"><span class="cn">點心</span> Dim Sum</span>
+              <span class="fi"><span class="cn">大閘蟹</span> Hairy Crab</span>
+            </div>
+            <div class="rest-list"><strong>推薦:</strong> 大董烤鴨店 Da Dong · 福和慧 Fu He Hui</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /days-wrap -->
+  </section>
+
+  <!-- BUDGET -->
+  <section class="section">
+    <div class="sec-hdr">
+      <h2>Estimated Budget <span class="cn">預算估算</span></h2>
+      <div class="sec-line"></div>
+    </div>
+    <p style="font-size:13px;color:var(--warm-grey);margin-bottom:16px;">7 Days · Family of 6 · 六人家庭 · Prices in CAD 加元</p>
+    <table class="budget-table">
+      <thead><tr><th>Category 項目</th><th style="text-align:right">Estimated Cost (CAD)</th></tr></thead>
+      <tbody>
+        <tr><td>🏨 Hotel 酒店 (3 rooms/suites 三間客房)</td><td>$3,500 – $7,500</td></tr>
+        <tr><td>🍜 Food &amp; Dining 餐飲</td><td>$1,200 – $2,000</td></tr>
+        <tr><td>🚇 Metro 地鐵 + Taxi 的士 / DiDi 滴滴</td><td>$250 – $500</td></tr>
+        <tr><td>🎡 Attractions 景點門票</td><td>$1,000 – $2,000</td></tr>
+        <tr><td>🏰 Disneyland 迪士尼 (optional 可選)</td><td>$800 – $1,200</td></tr>
+        <tr><td>🛍️ Shopping &amp; Extras 購物及雜項</td><td>Variable 視情況</td></tr>
+        <tr class="total"><td><strong>Mid-Range Total 中等舒適旅行</strong></td><td>~$7,000 – $10,000</td></tr>
+        <tr class="total"><td><strong>Luxury Total 豪華旅行</strong></td><td>~$14,000+</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- TIPS -->
+  <section class="section">
+    <div class="sec-hdr">
+      <h2>September Tips <span class="cn">九月旅遊貼士</span></h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="tips-grid">
+      <div class="tip-card"><div class="tip-icon">📅</div><div class="tip-title">Travel Late September 九月下旬</div><p>More comfortable weather. Cooler evenings &amp; clearer skies for outdoor walks. 天氣更涼爽，適合戶外活動。</p></div>
+      <div class="tip-card"><div class="tip-icon">👕</div><div class="tip-title">Pack Smart 聰明打包</div><p>Breathable clothing + light rain jacket + folding umbrella. 透氣衣物、輕薄雨衣、摺疊傘必備。</p></div>
+      <div class="tip-card"><div class="tip-icon">🚕</div><div class="tip-title">DiDi 滴滴 for Seniors</div><p>Use 滴滴出行 DiDi frequently. Avoid long walks in heat for seniors. 長者應多乘滴滴，避免長途步行。</p></div>
+      <div class="tip-card"><div class="tip-icon">🏛️</div><div class="tip-title">Museums at 2pm 午後進館</div><p>Schedule indoor museums &amp; aquarium during 1–4pm heat peak. 午後最熱時安排室內景點。</p></div>
+      <div class="tip-card"><div class="tip-icon">🎡</div><div class="tip-title">Book Early 提早預訂</div><p>Book 迪士尼 Premier Access and 上海中心 tower tickets online well in advance. 景點門票需提前預訂。</p></div>
+      <div class="tip-card"><div class="tip-icon">🌀</div><div class="tip-title">Carry Fans 隨身攜帶扇子</div><p>Portable handheld fans + umbrella make a real difference outdoors. 手持電風扇是九月戶外必備。</p></div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="ftitle">上海再見 · Until Next Time, Shanghai</div>
+  <p>September 2027 · Multigenerational Family Itinerary · 多代家庭旅遊行程</p>
+</footer>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ── PIN DATA (GPS + address for all 26 route pins) ── */
+const PIN_DATA = {"d1": [{"n": "\u2460", "en": "Hotel Base \u2013 People's Square / Jing'an", "cn": "\u9152\u5e97\uff08\u4eba\u6c11\u5ee3\u5834\uff0f\u975c\u5b89\u5340\uff09", "lat": 31.2352, "lng": 121.4814, "addr": "Jiujiang Lu, Huangpu District", "addr_cn": "\u9ec3\u6d66\u5340\u4e5d\u6c5f\u8def"}, {"n": "\u2461", "en": "The Bund Promenade", "cn": "\u5916\u7058\u6b65\u884c\u9053", "lat": 31.2403, "lng": 121.4906, "addr": "Zhongshan Dong Yi Lu, Huangpu", "addr_cn": "\u4e2d\u5c71\u6771\u4e00\u8def\uff0c\u9ec3\u6d66"}, {"n": "\u2462", "en": "Huangpu River Cruise Dock", "cn": "\u9ec3\u6d66\u6c5f\u904a\u8239\u78bc\u982d", "lat": 31.2314, "lng": 121.4943, "addr": "153 Zhongshan Dong Er Lu", "addr_cn": "\u4e2d\u5c71\u6771\u4e8c\u8def153\u865f"}], "d2": [{"n": "\u2460", "en": "Yu Garden", "cn": "\u8c6b\u5712", "lat": 31.2272, "lng": 121.4921, "addr": "218 Anren St, Huangpu", "addr_cn": "\u9ec3\u6d66\u5340\u5b89\u4ec1\u8857218\u865f"}, {"n": "\u2461", "en": "City God Temple", "cn": "\u57ce\u968d\u5edf", "lat": 31.2257, "lng": 121.4925, "addr": "249 Fangbang Zhong Lu", "addr_cn": "\u65b9\u6d5c\u4e2d\u8def249\u865f"}, {"n": "\u2462", "en": "Shanghai Museum", "cn": "\u4e0a\u6d77\u535a\u7269\u9928", "lat": 31.2283, "lng": 121.4755, "addr": "201 Renmin Dadao, Huangpu", "addr_cn": "\u4eba\u6c11\u5927\u9053201\u865f"}, {"n": "\u2463", "en": "Nanjing Road Pedestrian Street", "cn": "\u5357\u4eac\u8def\u6b65\u884c\u8857", "lat": 31.2347, "lng": 121.4749, "addr": "Nanjing Dong Lu, Huangpu", "addr_cn": "\u9ec3\u6d66\u5340\u5357\u4eac\u6771\u8def"}], "d3": [{"n": "\u2460", "en": "Shanghai Tower", "cn": "\u4e0a\u6d77\u4e2d\u5fc3\u5927\u5ec8", "lat": 31.2335, "lng": 121.5056, "addr": "501 Yincheng Zhong Lu, Pudong", "addr_cn": "\u9280\u57ce\u4e2d\u8def501\u865f\uff0c\u6d66\u6771"}, {"n": "\u2461", "en": "Oriental Pearl TV Tower", "cn": "\u6771\u65b9\u660e\u73e0\u5854", "lat": 31.2397, "lng": 121.4998, "addr": "1 Shiji Dadao, Lujiazui", "addr_cn": "\u4e16\u7d00\u5927\u90531\u865f\uff0c\u9678\u5bb6\u5634"}, {"n": "\u2462", "en": "Shanghai Ocean Aquarium", "cn": "\u4e0a\u6d77\u6d77\u6d0b\u6c34\u65cf\u9928", "lat": 31.2408, "lng": 121.5019, "addr": "1388 Lujiazui Ring Rd", "addr_cn": "\u9678\u5bb6\u5634\u74b0\u8def1388\u865f"}, {"n": "\u2463", "en": "Lujiazui Central Green", "cn": "\u9678\u5bb6\u5634\u4e2d\u5fc3\u7da0\u5730", "lat": 31.2379, "lng": 121.5059, "addr": "717 Lujiazui Ring Rd", "addr_cn": "\u9678\u5bb6\u5634\u74b0\u8def717\u865f"}, {"n": "\u2464", "en": "The Bund at Night", "cn": "\u5916\u7058\u591c\u666f", "lat": 31.2403, "lng": 121.4906, "addr": "Zhongshan Dong Yi Lu", "addr_cn": "\u4e2d\u5c71\u6771\u4e00\u8def"}], "d4": [{"n": "\u2460", "en": "Zhujiajiao Ancient Town Entrance", "cn": "\u6731\u5bb6\u89d2\u53e4\u93ae\u5165\u53e3", "lat": 31.1144, "lng": 121.054, "addr": "Zhuying Bin Lu, Qingpu", "addr_cn": "\u9752\u6d66\u5340\u73e0\u76c8\u6ff1\u8def"}, {"n": "\u2461", "en": "Fangsheng Bridge", "cn": "\u653e\u751f\u6a4b", "lat": 31.1127, "lng": 121.0619, "addr": "Fangsheng Bridge, Zhujiajiao", "addr_cn": "\u6731\u5bb6\u89d2\u653e\u751f\u6a4b"}, {"n": "\u2462", "en": "Canal Boat Dock", "cn": "\u6416\u6a79\u8239\u78bc\u982d", "lat": 31.115, "lng": 121.058, "addr": "Xijing St Pier, Zhujiajiao", "addr_cn": "\u6731\u5bb6\u89d2\u897f\u4e95\u8857\u78bc\u982d"}, {"n": "\u2463", "en": "Canalside Tea House Area", "cn": "\u81e8\u6c34\u8336\u9928\u5340", "lat": 31.116, "lng": 121.056, "addr": "Xijing St, Zhujiajiao", "addr_cn": "\u6731\u5bb6\u89d2\u897f\u4e95\u8857"}], "d5": [{"n": "\u2460", "en": "Wukang Road", "cn": "\u6b66\u5eb7\u8def", "lat": 31.2059, "lng": 121.4391, "addr": "Wukang Lu, Xuhui District", "addr_cn": "\u5f90\u532f\u5340\u6b66\u5eb7\u8def"}, {"n": "\u2461", "en": "Anfu Road", "cn": "\u5b89\u798f\u8def", "lat": 31.2142, "lng": 121.4444, "addr": "Anfu Lu, Xuhui District", "addr_cn": "\u5f90\u532f\u5340\u5b89\u798f\u8def"}, {"n": "\u2462", "en": "Tianzifang Arts District", "cn": "\u7530\u5b50\u574a", "lat": 31.2088, "lng": 121.4689, "addr": "210 Lane, Taikang Lu, Huangpu", "addr_cn": "\u6cf0\u5eb7\u8def210\u5f04\uff0c\u9ec3\u6d66"}, {"n": "\u2463", "en": "Fairmont Peace Hotel Jazz Bar", "cn": "\u548c\u5e73\u98ef\u5e97\u7235\u58eb\u5427", "lat": 31.239, "lng": 121.4895, "addr": "20 Nanjing Dong Lu, Bund", "addr_cn": "\u5357\u4eac\u6771\u8def20\u865f\uff0c\u5916\u7058"}], "d6": [{"n": "A", "en": "Shanghai Disneyland", "cn": "\u4e0a\u6d77\u8fea\u58eb\u5c3c\u6a02\u5712", "lat": 31.1434, "lng": 121.6579, "addr": "Disneyland Rd, Chuansha, Pudong", "addr_cn": "\u6d66\u6771\u65b0\u5340\u5ddd\u6c99\u8fea\u58eb\u5c3c\u5927\u9053"}, {"n": "B1", "en": "Xintiandi", "cn": "\u65b0\u5929\u5730", "lat": 31.2192, "lng": 121.4749, "addr": "123 Madang Lu, Huangpu", "addr_cn": "\u9ec3\u6d66\u5340\u99ac\u7576\u8def123\u865f"}, {"n": "B2", "en": "Jing'an Temple", "cn": "\u975c\u5b89\u5bfa", "lat": 31.2235, "lng": 121.4453, "addr": "1686 Nanjing Xi Lu, Jing'an", "addr_cn": "\u975c\u5b89\u5340\u5357\u4eac\u897f\u8def1686\u865f"}], "d7": [{"n": "\u2460", "en": "Jing'an Temple", "cn": "\u975c\u5b89\u5bfa", "lat": 31.2235, "lng": 121.4453, "addr": "1686 Nanjing Xi Lu, Jing'an", "addr_cn": "\u975c\u5b89\u5340\u5357\u4eac\u897f\u8def1686\u865f"}, {"n": "\u2461", "en": "People's Park", "cn": "\u4eba\u6c11\u516c\u5712", "lat": 31.2322, "lng": 121.4732, "addr": "231 Nanjing Xi Lu, Huangpu", "addr_cn": "\u9ec3\u6d66\u5340\u5357\u4eac\u897f\u8def231\u865f"}, {"n": "\u2462", "en": "Farewell Lunch Area \u2013 Xintiandi", "cn": "\u544a\u5225\u5348\u5bb4\uff08\u65b0\u5929\u5730\uff09", "lat": 31.2192, "lng": 121.4749, "addr": "123 Madang Lu, Huangpu", "addr_cn": "\u9ec3\u6d66\u5340\u99ac\u7576\u8def123\u865f"}]};
+
+/* ── CRITIC'S PICKS (490 items, 7 categories x 10 x 7 days) ── */
+const PICKS = {"d1": {"accommodation": [{"name": "The Peninsula Shanghai", "cn": "\u4e0a\u6d77\u534a\u5cf6\u9152\u5e97", "note": "Iconic riverfront luxury; Bund views from every room", "addr": "32 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Fairmont Peace Hotel", "cn": "\u548c\u5e73\u98ef\u5e97", "note": "Art-deco legend on the Bund; legendary jazz bar", "addr": "20 Nanjing Dong Lu", "stars": 5}, {"name": "Waldorf Astoria Shanghai", "cn": "\u83ef\u723e\u9053\u592b\u9152\u5e97", "note": "Gilded 1920s grandeur meets modern luxury", "addr": "2 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "The Langham Shanghai", "cn": "\u6717\u5ef7\u9152\u5e97", "note": "Elegant Xintiandi base; excellent family service", "addr": "99 Madang Lu", "stars": 5}, {"name": "Hyatt on the Bund", "cn": "\u5916\u7058\u8302\u6085\u5927\u9152\u5e97", "note": "Twin-tower views; rooftop bar is a must", "addr": "199 Huangpu Lu", "stars": 5}, {"name": "JW Marriott Tomorrow Square", "cn": "\u660e\u5929\u5ee3\u5834\u842c\u8c6a", "note": "Above People's Square; 38-floor atrium", "addr": "399 Nanjing Xi Lu", "stars": 5}, {"name": "Le M\u00e9ridien Shanghai", "cn": "\u4e0a\u6d77\u827e\u7f8e\u9152\u5e97", "note": "Design-forward; steps from Zhongshan Park metro", "addr": "789 Zhongshan Xi Lu", "stars": 4}, {"name": "Central Hotel Shanghai", "cn": "\u4e0a\u6d77\u4e2d\u5fc3\u5927\u9152\u5e97", "note": "Mid-range gem; central location, excellent breakfast", "addr": "555 Jiujiang Lu", "stars": 4}, {"name": "Courtyard by Marriott Central", "cn": "\u842c\u6021\u9152\u5e97\uff08\u4e2d\u5fc3\uff09", "note": "Reliable comfort; 5 min walk to metro", "addr": "338 Hengfeng Lu", "stars": 4}, {"name": "Campanile Shanghai Bund", "cn": "\u5eb7\u9251\u9152\u5e97\uff08\u5916\u7058\uff09", "note": "Best-value Bund-area stay; clean and efficient", "addr": "500 Jiujiang Lu", "stars": 3}], "restaurants": [{"name": "Jean-Georges Shanghai", "cn": "\u5c1a\u96c5\u9910\u5ef3", "note": "World-class French; Bund views; pre-book essential", "addr": "Three on the Bund, 3 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Lost Heaven", "cn": "\u82b1\u99ac\u5929\u5802", "note": "Yunnan folk cuisine in atmospheric colonial building", "addr": "17 Yan'an Dong Lu", "stars": 4}, {"name": "Din Tai Fung (Xintiandi)", "cn": "\u9f0e\u6cf0\u8c50", "note": "Gold-standard xiaolongbao; queues move fast", "addr": "123 Xingye Lu", "stars": 4}, {"name": "Ultraviolet by Paul Pairet", "cn": "\u7d2b\u5916\u7dda\u9910\u5ef3", "note": "20-course immersive dining; book months ahead", "addr": "Location disclosed on booking", "stars": 5}, {"name": "Mr & Mrs Bund", "cn": "\u5916\u7058\u5148\u751f", "note": "Modern French bistro with iconic Bund views", "addr": "18 Zhongshan Dong Yi Lu, 6F", "stars": 4}, {"name": "Hakkasan Shanghai", "cn": "\u590f\u82d1", "note": "Sleek Cantonese; dim sum lunch is superb", "addr": "18 Dongping Lu", "stars": 4}, {"name": "El Willy", "cn": "\u5a01\u5229\u9910\u5ef3", "note": "Spanish tapas; the croquetas are legendary", "addr": "5 Zhongshan Dong Er Lu", "stars": 4}, {"name": "Yongfu Elite", "cn": "\u752c\u5e9c", "note": "Refined Ningbo cuisine; stunning restored villa", "addr": "200 Yongfu Lu", "stars": 5}, {"name": "Jade on 36", "cn": "\u7fe1\u7fe036", "note": "French fine dining on the 36th floor", "addr": "Pudong Shangri-La, 33 Fucheng Lu", "stars": 5}, {"name": "Fu 1039", "cn": "\u798f1039", "note": "Classic Shanghainese in a 1930s lane house", "addr": "1039 Yuyuan Lu", "stars": 4}], "snacks": [{"name": "Yang's Dumpling (\u5c0f\u694a\u751f\u714e)", "cn": "\u5c0f\u694a\u751f\u714e", "note": "Crispy-bottom pork buns \u2014 Shanghai's most famous", "addr": "54 Wujiang Lu", "stars": 4}, {"name": "Nanxiang Xiaolongbao", "cn": "\u5357\u7fd4\u5c0f\u7c60\u5305", "note": "The original soup dumpling shop since 1900", "addr": "85 Yuyuan Lu", "stars": 5}, {"name": "Grandma's Hand Noodles", "cn": "\u5916\u5a46\u624b\u5de5\u9eb5", "note": "Hand-pulled noodles; try the braised pork version", "addr": "282 Fumin Lu", "stars": 4}, {"name": "Auntie Shanghai (\u963f\u59e8\u4e0a\u6d77)", "cn": "\u963f\u59e8\u4e0a\u6d77", "note": "Scallion pancakes (\u8471\u6cb9\u9905) fresh from the griddle", "addr": "Street stalls, Huanghe Lu Food St", "stars": 4}, {"name": "Canteen by Tiago (\u7cd6\u671d)", "cn": "\u7cd6\u671d", "note": "Hong-Kong-style milk tea and egg tarts", "addr": "28 Gaolan Lu", "stars": 4}, {"name": "Uncle No.1 (\u4e00\u53f7\u53d4\u53d4)", "cn": "\u4e00\u865f\u53d4\u53d4", "note": "Stinky tofu (\u81ed\u8c46\u8150) \u2014 bold, essential experience", "addr": "Near Yu Garden, Old Town", "stars": 3}, {"name": "Wuyue Renjia (\u5433\u8d8a\u4eba\u5bb6)", "cn": "\u5433\u8d8a\u4eba\u5bb6", "note": "Braised pork rice (\u7d05\u71d2\u8089\u98ef) \u2014 hearty and cheap", "addr": "70 Xujiahui Lu", "stars": 4}, {"name": "Guanqi Dim Sum (\u51a0\u5947\u9ede\u5fc3)", "cn": "\u51a0\u5947\u9ede\u5fc3", "note": "Old-school dim sum trolley; arrive before 9am", "addr": "5 Menghua St", "stars": 4}, {"name": "Harbin Food Store", "cn": "\u54c8\u723e\u6ff1\u98df\u54c1\u5ee0", "note": "Soviet-era biscuits and pastries since 1936", "addr": "588 Nanjing Dong Lu", "stars": 4}, {"name": "Xiao Long Tang (\u5c0f\u5f04\u5802)", "cn": "\u5c0f\u5f04\u5802", "note": "Tangyuan (\u6e6f\u5713) \u2014 glutinous rice balls in sweet broth", "addr": "Near People's Square", "stars": 3}], "poi": [{"name": "The Bund", "cn": "\u5916\u7058", "note": "Walk at golden hour and again at night \u2014 two different worlds", "addr": "Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Shanghai Museum", "cn": "\u4e0a\u6d77\u535a\u7269\u9928", "note": "Free entry; bronze gallery alone is worth an hour", "addr": "201 Renmin Dadao", "stars": 5}, {"name": "People's Square", "cn": "\u4eba\u6c11\u5ee3\u5834", "note": "Central hub; see the weekend marriage market", "addr": "231 Nanjing Xi Lu", "stars": 4}, {"name": "Bund History Museum", "cn": "\u5916\u7058\u6b77\u53f2\u7d00\u5ff5\u9928", "note": "Free; covers treaty port era in depth", "addr": "The Bund Observation Deck", "stars": 4}, {"name": "Rockbund Art Museum", "cn": "\u5916\u7058\u7f8e\u8853\u9928", "note": "Contemporary Chinese art in 1932 Royal Asiatic building", "addr": "20 Huqiu Lu", "stars": 4}, {"name": "Nanjing Road", "cn": "\u5357\u4eac\u8def\u6b65\u884c\u8857", "note": "Best at night when neon signs illuminate everything", "addr": "Nanjing Dong Lu", "stars": 4}, {"name": "Huangpu River", "cn": "\u9ec3\u6d66\u6c5f", "note": "Sunset and night cruises both magical", "addr": "Embarkation at Zhongshan Dong Er Lu", "stars": 5}, {"name": "Suzhou Creek Walk", "cn": "\u8607\u5dde\u6cb3\u6b65\u9053", "note": "Quieter alternative to Bund; great street art", "addr": "Along Suzhou Creek, Jing'an", "stars": 3}, {"name": "MOCA Shanghai", "cn": "\u4e0a\u6d77\u7576\u4ee3\u85dd\u8853\u9928", "note": "People's Park museum; contemporary Chinese art", "addr": "231 Nanjing Xi Lu, People's Park", "stars": 4}, {"name": "Bund Finance Centre", "cn": "\u5916\u7058\u91d1\u878d\u4e2d\u5fc3", "note": "Norman Foster-designed; see the kinetic metal curtain", "addr": "600 Zhongshan Dong Er Lu", "stars": 4}], "shopping": [{"name": "Nanjing Road Shopping Mile", "cn": "\u5357\u4eac\u8def\u5546\u696d\u8857", "note": "Department stores, flagships, souvenirs", "addr": "Nanjing Dong Lu", "stars": 4}, {"name": "Iapm Mall", "cn": "\u74b0\u8cbf\u5ee3\u5834", "note": "Luxury brands; great food court on basement level", "addr": "999 Huaihai Zhong Lu", "stars": 4}, {"name": "Shanghai No.1 Provisions Store", "cn": "\u7b2c\u4e00\u98df\u54c1\u5546\u5e97", "note": "Historic 1926 food emporium; local snacks to take home", "addr": "720 Nanjing Dong Lu", "stars": 4}, {"name": "Raffles City Shanghai", "cn": "\u4f86\u798f\u58eb\u5ee3\u5834", "note": "Central mall; good range across all budgets", "addr": "268 Xizang Zhong Lu", "stars": 4}, {"name": "Xintiandi Style", "cn": "\u65b0\u5929\u5730\u6642\u5c1a", "note": "Boutiques in heritage lane houses", "addr": "245 Madang Lu", "stars": 4}, {"name": "Shanghai Tang", "cn": "\u4e0a\u6d77\u7058", "note": "High-end Hong Kong fashion with Shanghai flair", "addr": "The Bund, Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Three on the Bund", "cn": "\u5916\u7058\u4e09\u865f", "note": "Luxury boutiques inside a 1916 Bund landmark", "addr": "3 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Old Shanghai Bazaar", "cn": "\u4e0a\u6d77\u8001\u8857", "note": "Lanterns, fans, silk scarves \u2014 best souvenir hunting", "addr": "Fangbang Zhong Lu, near Yu Garden", "stars": 3}, {"name": "Synchrony Outlets", "cn": "\u4e0a\u6d77\u5967\u7279\u840a\u65af", "note": "Discount luxury brands; needs half a day", "addr": "Qingpu District", "stars": 3}, {"name": "M50 Art Zone", "cn": "M50\u5275\u610f\u5712", "note": "Studios and galleries in converted cotton mill", "addr": "50 Moganshan Lu", "stars": 4}], "cultural": [{"name": "Shanghai Acrobatics Show", "cn": "\u4e0a\u6d77\u96dc\u6280\u5718", "note": "Nightly shows; jaw-dropping feats by world champions", "addr": "Shanghai Centre Theatre, 1376 Nanjing Xi Lu", "stars": 5}, {"name": "Peace Hotel Jazz Band", "cn": "\u548c\u5e73\u98ef\u5e97\u8001\u5e74\u7235\u58eb\u6a02\u968a", "note": "80-year-old band still playing 1930s standards nightly", "addr": "20 Nanjing Dong Lu, Bund", "stars": 5}, {"name": "Shanghai Grand Theatre", "cn": "\u4e0a\u6d77\u5927\u5287\u9662", "note": "Opera, ballet, classical concerts in iconic building", "addr": "300 Renmin Dadao", "stars": 5}, {"name": "Shanghai Museum of Arts & Crafts", "cn": "\u4e0a\u6d77\u5de5\u85dd\u7f8e\u8853\u535a\u7269\u9928", "note": "Watch artisans make embroidery and lacquerware live", "addr": "79 Fenyang Lu", "stars": 4}, {"name": "Yifu Theatre (\u9038\u592b\u821e\u53f0)", "cn": "\u9038\u592b\u821e\u53f0", "note": "Best venue for traditional Kunqu and Peking opera", "addr": "701 Fuzhou Lu", "stars": 4}, {"name": "ShanghArt Gallery", "cn": "\u9999\u683c\u7d0d\u756b\u5eca", "note": "Premier contemporary Chinese art gallery since 1996", "addr": "Park Hotel, 170 Nanjing Xi Lu", "stars": 4}, {"name": "Shanghai History Museum", "cn": "\u4e0a\u6d77\u6b77\u53f2\u535a\u7269\u9928", "note": "In the Oriental Pearl Tower base; very visual", "addr": "1 Shiji Dadao, Lujiazui", "stars": 4}, {"name": "Museum of Contemporary Art", "cn": "\u7576\u4ee3\u85dd\u8853\u535a\u7269\u9928", "note": "Power Station of Art; best blockbuster shows", "addr": "200 Huayuangang Lu", "stars": 4}, {"name": "Jewish Refugees Museum", "cn": "\u7336\u592a\u96e3\u6c11\u7d00\u5ff5\u9928", "note": "Compelling WWII story of Shanghai's Jewish community", "addr": "62 Changyang Lu", "stars": 4}, {"name": "Propaganda Poster Art Centre", "cn": "\u5ba3\u50b3\u756b\u85dd\u8853\u4e2d\u5fc3", "note": "Unique private collection of Maoist-era posters", "addr": "Room B0C, 868 Huashan Lu", "stars": 4}], "outdoor": [{"name": "Bund Evening Walk", "cn": "\u5916\u7058\u591c\u904a", "note": "Most atmospheric after 8pm when lights fully illuminate", "addr": "Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Huangpu River Cruise", "cn": "\u9ec3\u6d66\u6c5f\u904a\u8239", "note": "45\u201360 min evening cruise; buy VIP upper deck", "addr": "153 Zhongshan Dong Er Lu", "stars": 5}, {"name": "People's Park Stroll", "cn": "\u4eba\u6c11\u516c\u5712\u6563\u6b65", "note": "Morning tai chi; weekend marriage market is fascinating", "addr": "231 Nanjing Xi Lu", "stars": 4}, {"name": "Suzhou Creek Walk", "cn": "\u8607\u5dde\u6cb3\u6b65\u9053", "note": "Flat 3 km riverside walk; industrial street art", "addr": "Along Suzhou Creek", "stars": 3}, {"name": "Jing'an Sculpture Park", "cn": "\u975c\u5b89\u96d5\u5851\u516c\u5712", "note": "Rotating outdoor sculpture installations; free", "addr": "128 Shimen Er Lu", "stars": 3}, {"name": "Century Park (\u4e16\u7d00\u516c\u5712)", "cn": "\u4e16\u7d00\u516c\u5712", "note": "Vast Pudong green space; pedal boats on the lake", "addr": "1001 Jinxiu Lu, Pudong", "stars": 4}, {"name": "Fuxing Park", "cn": "\u5fa9\u8208\u516c\u5712", "note": "Former French park; ballroom dancing every morning", "addr": "2 Gaolan Lu", "stars": 4}, {"name": "Lu Xun Park", "cn": "\u9b6f\u8fc5\u516c\u5712", "note": "Quiet park with Lu Xun's tomb; popular with locals", "addr": "146 Jiangwan Lu, Hongkou", "stars": 3}, {"name": "Zhongshan Park", "cn": "\u4e2d\u5c71\u516c\u5712", "note": "Rose garden; family picnic spot near metro", "addr": "780 Changning Lu", "stars": 3}, {"name": "Gongqing Forest Park", "cn": "\u5171\u9752\u68ee\u6797\u516c\u5712", "note": "Large nature park; rare urban forest in Shanghai", "addr": "2000 Jungong Lu", "stars": 4}]}, "d2": {"accommodation": [{"name": "The Peninsula Shanghai", "cn": "\u4e0a\u6d77\u534a\u5cf6\u9152\u5e97", "note": "Best for Old City proximity; butler service outstanding", "addr": "32 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Les Suites Orient", "cn": "\u6771\u65b9\u5546\u65c5\u7cbe\u54c1\u9152\u5e97", "note": "Boutique Bund; walking distance to Yu Garden", "addr": "1 Jinling Dong Lu", "stars": 4}, {"name": "Andaz Xintiandi", "cn": "\u5b89\u9054\u4ed5\u9152\u5e97", "note": "Hyatt boutique brand; modern design near Old Town", "addr": "88 Songshan Lu", "stars": 5}, {"name": "The ETON Hotel", "cn": "\u88d5\u666f\u5927\u98ef\u5e97", "note": "Smart mid-range near People's Square", "addr": "555 Hengshan Lu", "stars": 4}, {"name": "Hotel Indigo Shanghai on the Bund", "cn": "\u5916\u7058\u82f1\u8fea\u683c\u9152\u5e97", "note": "Quirky art-themed rooms; rooftop views", "addr": "585 Zhongshan Dong Er Lu", "stars": 4}, {"name": "Fullerton Hotel", "cn": "\u798f\u723e\u9813\u9152\u5e97", "note": "New luxury on the Suzhou Creek waterfront", "addr": "1 Waibaidu Bridge, Beizhan Lu", "stars": 5}, {"name": "Motel168 (People's Square)", "cn": "\u83ab\u6cf0168\uff08\u4eba\u6c11\u5ee3\u5834\uff09", "note": "Clean budget base; unbeatable central location", "addr": "190 Jiujiang Lu", "stars": 2}, {"name": "Hanting Express Nanjing Rd", "cn": "\u6f22\u5ead\u5feb\u6377\uff08\u5357\u4eac\u8def\uff09", "note": "Chinese chain hotel; functional and cheap", "addr": "Near Nanjing Dong Lu", "stars": 2}, {"name": "SSAW Boutique Hotel Shanghai", "cn": "\u4e0a\u6d77\u7d22\u83f2\u7279\u6d77\u502b\u8cd3\u9928", "note": "Renovated heritage building; boutique character", "addr": "1 Donghu Lu", "stars": 4}, {"name": "Capella Shanghai Jian Ye Li", "cn": "\u5609\u4f69\u6a02\u9152\u5e97", "note": "Hidden gem in restored 1930s terrace houses", "addr": "480 Jianguo Xi Lu", "stars": 5}], "restaurants": [{"name": "Nanxiang Steamed Bun Restaurant", "cn": "\u5357\u7fd4\u9945\u982d\u5e97", "note": "The original xiaolongbao shop inside Yu Garden bazaar", "addr": "85 Yuyuan Lu", "stars": 5}, {"name": "Old Shanghai Restaurant (\u8001\u4e0a\u6d77\u98ef\u5e97)", "cn": "\u8001\u4e0a\u6d77\u98ef\u5e97", "note": "Classic red-braised pork and drunken chicken done right", "addr": "242 Fangbang Zhong Lu", "stars": 4}, {"name": "Wujiashaojiao (\u5433\u5bb6\u71d2\u89d2)", "cn": "\u5433\u5bb6\u71d2\u89d2", "note": "Best wonton soup in the Old Town area", "addr": "Near City God Temple", "stars": 4}, {"name": "Din Tai Fung (Xintiandi)", "cn": "\u9f0e\u6cf0\u8c50", "note": "Benchmark dumplings; go for the crab xiaolongbao", "addr": "123 Xingye Lu", "stars": 5}, {"name": "Lao Zheng Xing (\u8001\u6b63\u8208)", "cn": "\u8001\u6b63\u8208", "note": "Shanghai institution since 1862; authentic Hu cuisine", "addr": "556 Fuzhou Lu", "stars": 4}, {"name": "New Guang Fu Lou", "cn": "\u5ee3\u798f\u6a13", "note": "Cantonese in classic setting; great seafood", "addr": "242 Jiujiang Lu", "stars": 4}, {"name": "Ba Guo Bu Yi (\u5df4\u570b\u5e03\u8863)", "cn": "\u5df4\u570b\u5e03\u8863", "note": "Sichuan cuisine in courtyard setting", "addr": "271 Fumin Lu", "stars": 4}, {"name": "Ye Shanghai (\u591c\u4e0a\u6d77)", "cn": "\u591c\u4e0a\u6d77", "note": "Traditional Shanghainese; gorgeous Art Deco interior", "addr": "338 Huangpi Nan Lu", "stars": 4}, {"name": "Crystal Jade (\u7fe1\u7fe0\u9152\u5bb6)", "cn": "\u7fe1\u7fe0\u9152\u5bb6", "note": "Reliable Cantonese dim sum; consistent quality", "addr": "6-7F, South Block Xintiandi", "stars": 4}, {"name": "Xiao Nan Guo (\u5c0f\u5357\u570b)", "cn": "\u5c0f\u5357\u570b", "note": "Premium Shanghainese chain; the lion's head meatball is unmissable", "addr": "251 Tongren Lu", "stars": 4}], "snacks": [{"name": "Crab Noodles (\u87f9\u7c89\u9eb5)", "cn": "\u87f9\u7c89\u9eb5", "note": "Seasonal crab paste on hand-pulled noodles \u2014 unmissable in Sept", "addr": "Nanxiang Restaurant, Yu Garden", "stars": 5}, {"name": "Shengjianbao (\u751f\u714e\u5305)", "cn": "\u751f\u714e\u5305", "note": "Pan-fried pork bun; crispy bottom, juicy inside", "addr": "Small Yang's, Old Town area", "stars": 5}, {"name": "Tanghulu (\u7cd6\u846b\u8606)", "cn": "\u7cd6\u846b\u8606", "note": "Candied hawthorn on a stick \u2014 sweet & sour street classic", "addr": "Yuyuan Bazaar stalls", "stars": 4}, {"name": "Pumpkin Cake (\u5357\u74dc\u9905)", "cn": "\u5357\u74dc\u9905", "note": "Deep-fried pumpkin and red bean \u2014 sweet, chewy, perfect", "addr": "Various Old Town stalls", "stars": 4}, {"name": "Sticky Rice Cake (\u5e74\u7cd5)", "cn": "\u5e74\u7cd5", "note": "Pan-fried nian gao with pork and greens", "addr": "Fangbang Zhong Lu stalls", "stars": 4}, {"name": "Osmanthus Cake (\u6842\u82b1\u7cd5)", "cn": "\u6842\u82b1\u7cd5", "note": "Sweet soft cake; osmanthus scent fills the alley", "addr": "Yuyuan Bazaar", "stars": 4}, {"name": "Crab Roe Bun (\u87f9\u9ec3\u5305)", "cn": "\u87f9\u9ec3\u5305", "note": "Steamed bun loaded with crab roe \u2014 seasonal treasure", "addr": "Near City God Temple", "stars": 5}, {"name": "Sesame Ball (\u714e\u5806)", "cn": "\u714e\u5806", "note": "Crispy fried glutinous ball with lotus paste", "addr": "Old Street vendors", "stars": 3}, {"name": "Green Onion Pancake (\u8471\u6cb9\u9905)", "cn": "\u8471\u6cb9\u9905", "note": "Layered, flaky, fragrant \u2014 classic Shanghai street food", "addr": "Huanghe Lu Food Street", "stars": 4}, {"name": "Almond Tofu (\u674f\u4ec1\u8c46\u8150)", "cn": "\u674f\u4ec1\u8c46\u8150", "note": "Silky cold dessert; subtle almond flavour", "addr": "Dessert shops, Nanjing Rd", "stars": 3}], "poi": [{"name": "Yu Garden (\u8c6b\u5712)", "cn": "\u8c6b\u5712", "note": "Ming Dynasty masterpiece; arrive at 9am to avoid crowds", "addr": "218 Anren St", "stars": 5}, {"name": "City God Temple (\u57ce\u968d\u5edf)", "cn": "\u57ce\u968d\u5edf", "note": "Taoist temple; free outer bazaar, paid inner shrine", "addr": "249 Fangbang Zhong Lu", "stars": 4}, {"name": "Shanghai Museum (\u4e0a\u6d77\u535a\u7269\u9928)", "cn": "\u4e0a\u6d77\u535a\u7269\u9928", "note": "Bronze, jade, porcelain \u2014 all free; book time slot", "addr": "201 Renmin Dadao", "stars": 5}, {"name": "Yuyuan Bazaar", "cn": "\u8c6b\u5712\u5546\u57ce", "note": "Old Town shopping area; chaotic but characterful", "addr": "Near Yu Garden", "stars": 3}, {"name": "Dajing Pavilion (\u5927\u5883\u95a3)", "cn": "\u5927\u5883\u95a3", "note": "Only surviving section of Ming-era city wall", "addr": "269 Dajing Lu", "stars": 4}, {"name": "Old Street (\u65b9\u6d5c\u4e2d\u8def)", "cn": "\u65b9\u6d5c\u4e2d\u8def\u8001\u8857", "note": "Traditional architecture; antique shops and tea houses", "addr": "Fangbang Zhong Lu", "stars": 3}, {"name": "Temple of the City God", "cn": "\u4e0a\u6d77\u57ce\u968d\u5edf", "note": "Active Taoist temple; incense and rituals daily", "addr": "249 Fangbang Zhong Lu", "stars": 4}, {"name": "Peking Opera Exhibition", "cn": "\u4eac\u5287\u5c55\u89bd\u9928", "note": "Costumes, instruments; free at Yifu Theatre lobby", "addr": "701 Fuzhou Lu", "stars": 3}, {"name": "Nanjing Road", "cn": "\u5357\u4eac\u8def\u6b65\u884c\u8857", "note": "Best evening; neon signs blaze after 7pm", "addr": "Nanjing Dong Lu", "stars": 4}, {"name": "SML Museum", "cn": "SML\u535a\u7269\u9928", "note": "Small quirky museum of Shanghai daily life 1949\u20131990", "addr": "near Yu Garden", "stars": 3}], "shopping": [{"name": "Yuyuan Bazaar", "cn": "\u8c6b\u5712\u5546\u57ce", "note": "Lanterns, silk, fans, tea sets \u2014 tourist hub but prices negotiable", "addr": "Near Yu Garden", "stars": 3}, {"name": "Old Street (\u65b9\u6d5c\u4e2d\u8def)", "cn": "\u65b9\u6d5c\u4e2d\u8def", "note": "Antiques, calligraphy, paper-cuts along restored Ming street", "addr": "Fangbang Zhong Lu", "stars": 4}, {"name": "Fumin Lu Antique Market", "cn": "\u5fa9\u6c11\u8def\u53e4\u73a9\u5e02\u5834", "note": "Weekend antique and vintage market; haggle expected", "addr": "Fumin Lu, Jing'an", "stars": 4}, {"name": "Dongtai Road Antique Market", "cn": "\u6771\u53f0\u8def\u53e4\u73a9\u5e02\u5834", "note": "Old Shanghai curiosities; Mao memorabilia and jade", "addr": "Dongtai Lu", "stars": 3}, {"name": "Yunhong Chopsticks", "cn": "\u7b77\u96f2", "note": "Handcrafted chopstick sets; beautiful gifts", "addr": "200 Nanjing Xi Lu", "stars": 4}, {"name": "Shanghai Museum Shop", "cn": "\u4e0a\u6d77\u535a\u7269\u9928\u6587\u5275\u5546\u5e97", "note": "Best museum gift shop in China; replica bronzes and prints", "addr": "201 Renmin Dadao", "stars": 5}, {"name": "Li Shengji Tea (\u7acb\u751f\u8a18)", "cn": "\u7acb\u751f\u8a18\u8336\u8449", "note": "Expert-grade Chinese teas; friendly staff will brew samples", "addr": "Old Town tea street", "stars": 4}, {"name": "Yu Garden Silk", "cn": "\u8c6b\u5712\u7d72\u7da2", "note": "Hand-stitched silk cushion covers and embroidery", "addr": "Yuyuan Bazaar", "stars": 3}, {"name": "Nanjing Road Department Stores", "cn": "\u5357\u4eac\u8def\u767e\u8ca8", "note": "Multiple heritage stores selling local brands", "addr": "Nanjing Dong Lu", "stars": 3}, {"name": "Xinhua Bookstore (\u65b0\u83ef\u66f8\u5e97)", "cn": "\u65b0\u83ef\u66f8\u5e97", "note": "Good selection of Chinese art books and calligraphy sets", "addr": "345 Nanjing Dong Lu", "stars": 3}], "cultural": [{"name": "Yu Garden Lantern Festival", "cn": "\u8c6b\u5712\u71c8\u6703", "note": "Garden lit by thousands of silk lanterns at night", "addr": "Yu Garden Bazaar", "stars": 5}, {"name": "Shanghai Museum Bronze Gallery", "cn": "\u4e0a\u6d77\u535a\u7269\u9928\u9752\u9285\u9928", "note": "World-class Chinese bronze collection", "addr": "201 Renmin Dadao", "stars": 5}, {"name": "Peking Opera at Yifu", "cn": "\u9038\u592b\u821e\u53f0\u4eac\u5287", "note": "Full productions with English surtitles on weekends", "addr": "701 Fuzhou Lu", "stars": 4}, {"name": "Tea Ceremony Experience", "cn": "\u8336\u9053\u9ad4\u9a57", "note": "Learn gong fu cha at Old Town tea house", "addr": "Near City God Temple", "stars": 4}, {"name": "Chinese Calligraphy Demo", "cn": "\u66f8\u6cd5\u8868\u6f14", "note": "Masters writing large-scale calligraphy in the bazaar", "addr": "Yuyuan Bazaar", "stars": 4}, {"name": "Dajing Pavilion Exhibition", "cn": "\u5927\u5883\u95a3\u5c55\u89bd", "note": "Free history exhibits on Ming-era Shanghai", "addr": "269 Dajing Lu", "stars": 4}, {"name": "Old Town Walking Tour", "cn": "\u8001\u57ce\u5ec2\u5c0e\u89bd", "note": "2-hour guided walk revealing hidden laneways", "addr": "Meet at Yu Garden entrance", "stars": 4}, {"name": "Shanghai Folk Art Museum", "cn": "\u4e0a\u6d77\u6c11\u9593\u85dd\u8853\u535a\u7269\u9928", "note": "Paper-cutting, dough figurines, folk crafts", "addr": "1551 Fuxing Zhong Lu", "stars": 3}, {"name": "Jade Buddha Temple", "cn": "\u7389\u4f5b\u5bfa", "note": "Active temple; two stunning jade Buddhas", "addr": "170 Anyuan Lu, Jing'an", "stars": 5}, {"name": "Temple Fair Performances", "cn": "\u5edf\u6703\u8868\u6f14", "note": "Stilt-walkers, lion dancers in City God Temple forecourt", "addr": "City God Temple plaza", "stars": 4}], "outdoor": [{"name": "Yu Garden Walk", "cn": "\u8c6b\u5712\u6f2b\u6b65", "note": "Early morning for peaceful photos before tour groups arrive", "addr": "Yu Garden", "stars": 5}, {"name": "Fuxing Park", "cn": "\u5fa9\u8208\u516c\u5712", "note": "Former French park; morning ballroom dancing is delightful", "addr": "2 Gaolan Lu", "stars": 4}, {"name": "Old Town Alley Exploration", "cn": "\u8001\u57ce\u5ec2\u5f04\u5802\u63a2\u7d22", "note": "Wander the remaining hutong-style laneways", "addr": "Around Fangbang Zhong Lu", "stars": 4}, {"name": "Huangpu Riverfront Walk", "cn": "\u9ec3\u6d66\u6c5f\u6b65\u9053", "note": "South Bund waterfront; less crowded, same views", "addr": "South Bund, Pu Xi", "stars": 4}, {"name": "Bund Waterfront Promenade", "cn": "\u5916\u7058\u6b65\u884c\u9053", "note": "Golden hour to blue hour is the essential Shanghai ritual", "addr": "Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Jing'an Sculpture Park", "cn": "\u975c\u5b89\u96d5\u5851\u516c\u5712", "note": "Modern sculpture trail; popular lunch spot", "addr": "128 Shimen Er Lu", "stars": 3}, {"name": "Xujiahui Park", "cn": "\u5f90\u5bb6\u532f\u516c\u5712", "note": "Beautiful riverside park with Art Deco water tower", "addr": "1 Zhaojiabang Lu", "stars": 4}, {"name": "Nanjing Road Night Walk", "cn": "\u5357\u4eac\u8def\u591c\u904a", "note": "Best visited 8\u201310pm when neon is fully blazing", "addr": "Nanjing Dong Lu", "stars": 4}, {"name": "Zhongshan Park Rose Garden", "cn": "\u4e2d\u5c71\u516c\u5712\u73ab\u7470\u5712", "note": "Quiet rose garden; perfect for seniors to rest", "addr": "780 Changning Lu", "stars": 3}, {"name": "People's Square Open Air", "cn": "\u4eba\u6c11\u5ee3\u5834\u5ee3\u5834", "note": "Fountains and locals flying kites in evenings", "addr": "People's Square", "stars": 3}]}, "d3": {"accommodation": [{"name": "Shangri-La Pudong", "cn": "\u6d66\u6771\u9999\u683c\u91cc\u62c9", "note": "Twin towers facing Bund; best Pudong location", "addr": "33 Fucheng Lu", "stars": 5}, {"name": "Grand Hyatt Shanghai", "cn": "\u4e0a\u6d77\u91d1\u8302\u541b\u6085\u9152\u5e97", "note": "Occupies top 35 floors of Jin Mao Tower \u2014 an experience", "addr": "88 Shiji Dadao", "stars": 5}, {"name": "Park Hyatt Shanghai", "cn": "\u4e0a\u6d77\u67cf\u6085\u9152\u5e97", "note": "Top 34 floors of SWFC; cloud-level rooms", "addr": "100 Century Ave", "stars": 5}, {"name": "Four Seasons Pudong", "cn": "\u6d66\u6771\u56db\u5b63\u9152\u5e97", "note": "Intimate luxury; rooftop pool with skyline views", "addr": "210 Century Ave", "stars": 5}, {"name": "IHG Shanghai Pudong", "cn": "\u4e0a\u6d77\u6d66\u6771\u6d32\u969b\u9152\u5e97", "note": "Solid 5-star next to convention centre", "addr": "777 Zhangyang Lu", "stars": 5}, {"name": "Novotel Atlantis Shanghai", "cn": "\u4e0a\u6d77\u4e9e\u7279\u862d\u8482\u65af\u8afe\u5bcc\u7279", "note": "Fun aquatic theme; great for kids", "addr": "728 Pudong Ave", "stars": 4}, {"name": "Renaissance Shanghai Pudong", "cn": "\u4e0a\u6d77\u6d66\u6771\u842c\u9e97\u9152\u5e97", "note": "Art-themed; great proximity to Century Park", "addr": "1 Fanghua Lu", "stars": 4}, {"name": "Holiday Inn Express Pudong", "cn": "\u667a\u9078\u5047\u65e5\u9152\u5e97\uff08\u6d66\u6771\uff09", "note": "Clean, functional, affordable Pudong base", "addr": "990 Pudong Nan Lu", "stars": 3}, {"name": "Meilong Dasha (\u6885\u9f8d\u5927\u5ec8)", "cn": "\u6885\u9f8d\u5927\u5ec8\u516c\u5bd3", "note": "Serviced apartments; excellent value for families", "addr": "Near Lujiazui", "stars": 3}, {"name": "Radisson Blu Hotel Pudong", "cn": "\u6d66\u6771\u9e97\u7b19\u9152\u5e97", "note": "Good location; rooftop bar is underrated", "addr": "2000 Yanan Dong Lu", "stars": 4}], "restaurants": [{"name": "Jade on 36", "cn": "\u7fe1\u7fe036", "note": "French fine dining at cloud level in Shangri-La", "addr": "33 Fucheng Lu, Level 36", "stars": 5}, {"name": "Flair Rooftop Restaurant", "cn": "Flair\u7a7a\u4e2d\u9910\u5ef3", "note": "Spectacular Bund view; good cocktails too", "addr": "IHG Shanghai, 57F", "stars": 4}, {"name": "Ding Tai Fung IFC", "cn": "\u9f0e\u6cf0\u8c50\uff08IFC\uff09", "note": "Convenient post-tower refuel; consistent quality", "addr": "IFC Mall LG1", "stars": 4}, {"name": "Crystal Jade (\u7fe1\u7fe0\u9152\u5bb6)", "cn": "\u7fe1\u7fe0\u9152\u5bb6", "note": "Cantonese at its reliable best; dim sum for lunch", "addr": "6F, South Block Xintiandi", "stars": 4}, {"name": "Harvest Restaurant", "cn": "\u8c50\u6536\u9910\u5ef3", "note": "Regional Chinese; hairy crab seasonal set menu", "addr": "168 Lujiazui Lu", "stars": 4}, {"name": "The Nest", "cn": "\u5de2", "note": "Modern European with river panoramas", "addr": "130 Mingzhu Lu, Pudong", "stars": 4}, {"name": "Tock's (\u70e4\u514b\u601d)", "cn": "\u70e4\u514b\u601d", "note": "Montreal-style smoked meat in Pudong \u2014 quirky but great", "addr": "195 Dongchang Lu", "stars": 3}, {"name": "Lost Heaven Pudong", "cn": "\u82b1\u99ac\u5929\u5802\uff08\u6d66\u6771\uff09", "note": "Yunnan folk cuisine; calmer than Bund branch", "addr": "17 Shengdao Lu, Pudong", "stars": 4}, {"name": "Whampoa Club (\u9ec3\u6d66\u6703)", "cn": "\u9ec3\u6d66\u6703", "note": "Contemporary Shanghainese; elegant Bund views", "addr": "5 Zhongshan Dong Yi Lu", "stars": 4}, {"name": "Gogo Grill", "cn": "\u5495\u5495\u70e4\u8089", "note": "Rooftop BBQ with Huangpu River views", "addr": "Near Lujiazui", "stars": 3}], "snacks": [{"name": "IFC Mall Food Court", "cn": "IFC\u7f8e\u98df\u5ee3\u5834", "note": "Excellent basement food court; ramen, dim sum, congee", "addr": "IFC Mall, Pudong", "stars": 4}, {"name": "Shanghai Tower Caf\u00e9", "cn": "\u4e0a\u6d77\u4e2d\u5fc3\u5496\u5561", "note": "Coffee at 118F \u2014 novelty factor unmatched", "addr": "Shanghai Tower, 118F observation", "stars": 4}, {"name": "Jia Jia Tang Bao (\u4f73\u5bb6\u6e6f\u5305)", "cn": "\u4f73\u5bb6\u6e6f\u5305", "note": "No-frills dumplings; queues are always worth it", "addr": "88 Huanghe Lu", "stars": 5}, {"name": "Dalian Lu Food Market", "cn": "\u5927\u9023\u8def\u7f8e\u98df\u5e02\u5834", "note": "Local night market feel; charcoal skewers and cold noodles", "addr": "Dalian Lu, Pudong", "stars": 3}, {"name": "Burger & Lobster (IFC)", "cn": "\u6f22\u5821\u9f8d\u8766", "note": "Go for the lobster roll as a Pudong afternoon treat", "addr": "IFC Mall", "stars": 4}, {"name": "Aroom Coffee", "cn": "\u963f\u8afe\u59c6\u5496\u5561", "note": "Best specialty coffee in Lujiazui area", "addr": "Near Orient Financial Centre", "stars": 4}, {"name": "Pao Mi Flower (\u7206\u7c73\u82b1)", "cn": "\u7206\u7c73\u82b1", "note": "Gourmet popcorn stall in IFC; great for snacking on the walk", "addr": "IFC Mall Lower Level", "stars": 3}, {"name": "Zhuyuan (\u716e\u82d1)", "cn": "\u716e\u82d1", "note": "Fresh-made glutinous rice skins; local favourite", "addr": "Pudong side streets", "stars": 3}, {"name": "Magnolia Bakery", "cn": "\u6728\u862d\u9eb5\u5305\u574a", "note": "New York-style cupcakes and banana pudding", "addr": "IFC Mall, Pudong", "stars": 4}, {"name": "Din Tai Fung Takeaway", "cn": "\u9f0e\u6cf0\u8c50\u5916\u5e36", "note": "Grab soup dumplings to eat in Lujiazui Green park", "addr": "IFC Mall LG1", "stars": 4}], "poi": [{"name": "Shanghai Tower Observation", "cn": "\u4e0a\u6d77\u4e2d\u5fc3\u89c0\u666f\u53f0", "note": "118F, 562m; world's highest observation deck in twisted tower", "addr": "501 Yincheng Zhong Lu", "stars": 5}, {"name": "Oriental Pearl Tower", "cn": "\u6771\u65b9\u660e\u73e0\u5854", "note": "Glass floor globe deck; Shanghai History Museum at base", "addr": "1 Shiji Dadao", "stars": 4}, {"name": "Shanghai World Financial Centre", "cn": "\u4e0a\u6d77\u74b0\u7403\u91d1\u878d\u4e2d\u5fc3", "note": "100 Corridor \u2014 a glass floor bridge between floors", "addr": "100 Century Ave", "stars": 4}, {"name": "Jin Mao Tower Skywalk", "cn": "\u91d1\u8302\u5927\u5ec8", "note": "88F skywalk around the central atrium \u2014 vertiginous", "addr": "88 Shiji Dadao", "stars": 4}, {"name": "Lujiazui Central Green", "cn": "\u9678\u5bb6\u5634\u4e2d\u5fc3\u7da0\u5730", "note": "Free park ringed by supertalls; great group photo backdrop", "addr": "717 Lujiazui Ring Rd", "stars": 4}, {"name": "Shanghai Ocean Aquarium", "cn": "\u4e0a\u6d77\u6d77\u6d0b\u6c34\u65cf\u9928", "note": "Asia's longest underwater tunnel; 10,000+ creatures", "addr": "1388 Lujiazui Ring Rd", "stars": 5}, {"name": "Shanghai Financial Museum", "cn": "\u4e0a\u6d77\u91d1\u878d\u535a\u7269\u9928", "note": "Free; interesting history of Chinese finance", "addr": "110 Yincheng Zhong Lu", "stars": 3}, {"name": "Riverside Promenade (\u6ff1\u6c5f\u5927\u9053)", "cn": "\u6ff1\u6c5f\u5927\u9053", "note": "3km waterfront walk facing The Bund \u2014 perfect at sunset", "addr": "Pudong Binjiang Dadao", "stars": 5}, {"name": "IFC Sky Bridge", "cn": "IFC\u7a7a\u4e2d\u9023\u5eca", "note": "Glasswalk linking IFC towers at height", "addr": "IFC, Lujiazui", "stars": 4}, {"name": "Expo 2010 Site", "cn": "\u4e16\u535a\u6703\u820a\u5740", "note": "China Pavilion now Red Brick Art Museum; worth seeing", "addr": "161 Shangnan Lu", "stars": 3}], "shopping": [{"name": "IFC Mall (\u56fd\u91d1\u4e2d\u5fc3)", "cn": "\u570b\u91d1\u4e2d\u5fc3", "note": "Herm\u00e8s, Cartier, high-end dining \u2014 Pudong's top mall", "addr": "8 Century Ave, Pudong", "stars": 5}, {"name": "Super Brand Mall", "cn": "\u6b63\u5927\u5ee3\u5834", "note": "Vast 10-floor mall; mix of brands and value dining", "addr": "168 Lujiazui Lu", "stars": 3}, {"name": "Lujiazui Duty Free", "cn": "\u9678\u5bb6\u5634\u514d\u7a05\u5e97", "note": "Good for cosmetics and spirits before departure", "addr": "Lujiazui area", "stars": 3}, {"name": "APM Mall", "cn": "APM\u5546\u5834", "note": "Open until midnight; Gen-Z fashion and street food", "addr": "655 Pudong Nan Lu", "stars": 3}, {"name": "Shanghai IFC Watches", "cn": "IFC\u540d\u9336\u884c", "note": "A.P., Patek, Rolex authorised dealers", "addr": "IFC Mall Podium", "stars": 5}, {"name": "Xinjie Dian", "cn": "\u65b0\u754c\u5e97", "note": "Chinese designer streetwear; unique pieces", "addr": "Near Lujiazui", "stars": 3}, {"name": "Zhangyang Road", "cn": "\u5f35\u694a\u8def", "note": "Electronics market; cheap accessories and gadgets", "addr": "Zhangyang Lu, Pudong", "stars": 3}, {"name": "Florentia Village", "cn": "\u4f5b\u7f85\u502b\u85a9\u5c0f\u93ae", "note": "Luxury outlet village; 30-min from city", "addr": "18 Chuanqing Lu, Pudong", "stars": 4}, {"name": "Jinqiao Mall", "cn": "\u91d1\u6a4b\u8cfc\u7269\u5ee3\u5834", "note": "Family-friendly; cinema, food court, IKEA nearby", "addr": "1018 Zhanqiao Lu", "stars": 3}, {"name": "Century Mart (\u4e16\u7d00\u806f\u83ef)", "cn": "\u4e16\u7d00\u806f\u83ef", "note": "Best supermarket to stock up on snacks for hotel", "addr": "225 Pudong Ave", "stars": 3}], "cultural": [{"name": "Shanghai History Museum", "cn": "\u4e0a\u6d77\u6b77\u53f2\u535a\u7269\u9928", "note": "Vivid dioramas in Oriental Pearl base; very family-friendly", "addr": "1 Shiji Dadao", "stars": 4}, {"name": "Power Station of Art", "cn": "\u7576\u4ee3\u85dd\u8853\u535a\u7269\u9928", "note": "Former Expo power station; best contemporary art venue", "addr": "200 Huayuangang Lu", "stars": 5}, {"name": "Jinmao Tower Exhibition", "cn": "\u91d1\u8302\u5927\u5ec8\u5c55\u5ef3", "note": "Architectural exhibition in the lobby; free", "addr": "88 Shiji Dadao", "stars": 3}, {"name": "Lujiazui Architecture Tour", "cn": "\u9678\u5bb6\u5634\u5efa\u7bc9\u5c0e\u89bd", "note": "Self-guided comparison of 4 supertalls up close", "addr": "Lujiazui district", "stars": 4}, {"name": "Red Brick Art Museum", "cn": "\u7d05\u78da\u7f8e\u8853\u9928", "note": "Former China Pavilion; changing contemporary shows", "addr": "161 Shangnan Lu", "stars": 4}, {"name": "China Art Museum", "cn": "\u4e2d\u83ef\u85dd\u8853\u5bae", "note": "Vast collection of modern Chinese painting; free", "addr": "205 Shangnan Lu", "stars": 4}, {"name": "Aurora Museum", "cn": "\u9707\u65e6\u535a\u7269\u9928", "note": "Private collection; excellent jade and Buddhist art", "addr": "99 Fucheng Lu", "stars": 4}, {"name": "Shanghai Science Tech Museum", "cn": "\u4e0a\u6d77\u79d1\u6280\u9928", "note": "Interactive; great for multi-generational groups", "addr": "2000 Century Ave", "stars": 4}, {"name": "Memorial Hall of the 1st CPC", "cn": "\u4e2d\u5171\u4e00\u5927\u7d00\u5ff5\u9928", "note": "Historic site; explains Shanghai's modern political history", "addr": "76 Xingye Lu", "stars": 3}, {"name": "Pudong Development Bank Gallery", "cn": "\u6d66\u767c\u9280\u884c\u85dd\u8853\u5eca", "note": "Free art exhibitions in gorgeous 1920s banking hall", "addr": "12 Zhongshan Dong Yi Lu", "stars": 4}], "outdoor": [{"name": "Riverside Promenade Pudong", "cn": "\u6d66\u6771\u6ff1\u6c5f\u5927\u9053", "note": "Best sunset view back toward Bund; 3km flat walk", "addr": "Pudong Binjiang Dadao", "stars": 5}, {"name": "Lujiazui Green Park", "cn": "\u9678\u5bb6\u5634\u4e2d\u5fc3\u7da0\u5730", "note": "Circular lawn surrounded by skyscrapers; great picnic spot", "addr": "717 Lujiazui Ring Rd", "stars": 4}, {"name": "Century Park (\u4e16\u7d00\u516c\u5712)", "cn": "\u4e16\u7d00\u516c\u5712", "note": "Largest park in Pudong; lake, cycling, paddleboats", "addr": "1001 Jinxiu Lu", "stars": 4}, {"name": "Zhangjiang Hi-Tech Park", "cn": "\u5f35\u6c5f\u9ad8\u79d1\u6280\u5712", "note": "Cherry blossom in spring; pleasant cycle path", "addr": "Zhangjiang, Pudong", "stars": 3}, {"name": "Expo Park Green Corridor", "cn": "\u4e16\u535a\u516c\u5712", "note": "Riverside green space on former Expo 2010 site", "addr": "Near South Bund, Pudong", "stars": 3}, {"name": "Nanpu Bridge Walk", "cn": "\u5357\u6d66\u5927\u6a4b\u6b65\u884c", "note": "Walk the bridge ramps for river panoramas", "addr": "Nanpu Bridge, Huangpu", "stars": 3}, {"name": "Bund Sightseeing Tunnel", "cn": "\u5916\u7058\u89c0\u5149\u96a7\u9053", "note": "Psychedelic light tunnel under the Huangpu \u2014 fun and kitsch", "addr": "Zhongshan Dong Yi Lu (Bund side)", "stars": 3}, {"name": "North Bund Waterfront", "cn": "\u5317\u5916\u7058\u6ff1\u6c34\u6b65\u9053", "note": "Quieter Bund alternative facing Pudong; less crowded", "addr": "North Bund, Hongkou", "stars": 4}, {"name": "River Taxi (\u8f2a\u6e21)", "cn": "\u9ec3\u6d66\u6c5f\u8f2a\u6e21", "note": "10-minute public ferry crossing for \u00a52 \u2014 authentic experience", "addr": "Various Bund piers", "stars": 4}, {"name": "Outdoor Yoga at Lujiazui Green", "cn": "\u9678\u5bb6\u5634\u7da0\u5730\u6236\u5916\u745c\u4f3d", "note": "Free morning community yoga sessions on weekdays", "addr": "Lujiazui Central Green", "stars": 3}]}, "d4": {"accommodation": [{"name": "Grand Mercure Zhujiajiao", "cn": "\u6731\u5bb6\u89d2\u7f8e\u7235\u9152\u5e97", "note": "Best hotel in Zhujiajiao; canal-view rooms", "addr": "Zhujiajiao, Qingpu", "stars": 4}, {"name": "Zhujiajiao Inn (\u6731\u5bb6\u89d2\u5ba2\u68e7)", "cn": "\u6731\u5bb6\u89d2\u5ba2\u68e7", "note": "Traditional courtyard guesthouse; canal-facing rooms", "addr": "Inside Zhujiajiao town", "stars": 3}, {"name": "Xisan Hotel Zhujiajiao", "cn": "\u66e6\u4e09\u5ba2\u68e7", "note": "Boutique converted waterfront warehouse", "addr": "Xijing St, Zhujiajiao", "stars": 3}, {"name": "Arles Boutique Hotel", "cn": "\u963f\u723e\u52d2\u7cbe\u54c1\u9152\u5e97", "note": "French-influenced; lovely breakfast on canal terrace", "addr": "Zhujiajiao", "stars": 3}, {"name": "The Peninsula Shanghai", "cn": "\u4e0a\u6d77\u534a\u5cf6\u9152\u5e97", "note": "Best for overnight stay; pre-book transfer to Zhujiajiao", "addr": "32 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Pullman Shanghai South", "cn": "\u4e0a\u6d77\u5357\u4e0a\u6d77\u9251\u723e\u66fc", "note": "Good Qingpu base if doing multiple day trips", "addr": "Qingpu District", "stars": 4}, {"name": "Waterhouse at South Bund", "cn": "\u5357\u5916\u7058\u6c34\u820d", "note": "Industrial-chic boutique; return to this after day trip", "addr": "1-3 Maojiayuan Lu", "stars": 4}, {"name": "Fuchun Resort", "cn": "\u5bcc\u6625\u5c71\u5c45", "note": "Luxury eco-resort 90 min away if extending the trip", "addr": "339 Jiangbin Dong Dadao, Fuyang", "stars": 5}, {"name": "Club Med Joyview", "cn": "\u5730\u4e2d\u6d77\u4ff1\u6a02\u90e8", "note": "Family resort near Zhujiajiao; kids love it", "addr": "Qingpu District", "stars": 4}, {"name": "Sofitel Legend People's Square", "cn": "\u4e0a\u6d77\u7d22\u83f2\u7279\u6d77\u502b\u8cd3\u9928", "note": "Solid luxury base for city; day trip from here", "addr": "1 Donghu Lu", "stars": 5}], "restaurants": [{"name": "Cangqiao Restaurant (\u5009\u6a4b\u98ef\u5e97)", "cn": "\u5009\u6a4b\u98ef\u5e97", "note": "Best sit-down lunch in Zhujiajiao; river shrimp speciality", "addr": "Near Fangsheng Bridge", "stars": 4}, {"name": "Zhuyuan (\u6731\u82d1)", "cn": "\u6731\u82d1", "note": "Traditional Jiangnan cuisine; bamboo rice and tofu", "addr": "Zhujiajiao town centre", "stars": 4}, {"name": "Xijing Shushe (\u897f\u6d87\u66f8\u820d)", "cn": "\u897f\u6d87\u66f8\u820d", "note": "Tea house serving light Jiangnan snacks with canal view", "addr": "Xijing St, Zhujiajiao", "stars": 5}, {"name": "Lao Jie Steamer (\u8001\u8857\u84b8\u7c60)", "cn": "\u8001\u8857\u84b8\u7c60", "note": "Hand-folded xiaolongbao in the old street", "addr": "Zhujiajiao main street", "stars": 4}, {"name": "Uncle Liu's River Fish (\u5289\u53d4\u9b5a\u9928)", "cn": "\u5289\u53d4\u9b5a\u9928", "note": "Fresh-caught river fish; simple but excellent", "addr": "Near boat dock", "stars": 4}, {"name": "Qingpu Old Town Restaurant", "cn": "\u9752\u6d66\u8001\u57ce\u9910\u5ef3", "note": "Braised pork shoulder slow-cooked since morning", "addr": "Qingpu town centre", "stars": 3}, {"name": "Jasmine Tea House", "cn": "\u8309\u8389\u8336\u9928", "note": "Traditional tea ceremony with snack platter", "addr": "Zhujiajiao canalside", "stars": 4}, {"name": "Bamboo Rice Stall", "cn": "\u7af9\u7b52\u98ef\u6524", "note": "Glutinous rice steamed in bamboo \u2014 aromatic and filling", "addr": "Various street stalls", "stars": 4}, {"name": "Niuyi Noodle House (\u626d\u4e00\u9eb5\u9928)", "cn": "\u626d\u4e00\u9eb5\u9928", "note": "Hand-pulled noodles with pork broth; rustic and delicious", "addr": "Back streets of Zhujiajiao", "stars": 3}, {"name": "Zhujiajiao Tofu Workshop", "cn": "\u6731\u5bb6\u89d2\u8c46\u8150\u574a", "note": "Watch tofu being made; buy fresh and fermented", "addr": "Near Xijing St", "stars": 3}], "snacks": [{"name": "River Shrimp (\u6cb3\u8766)", "cn": "\u6cb3\u8766", "note": "Freshwater shrimp fried with garlic \u2014 the local must-try", "addr": "Canalside stalls, Zhujiajiao", "stars": 5}, {"name": "Bamboo Tube Rice (\u7af9\u7b52\u98ef)", "cn": "\u7af9\u7b52\u98ef", "note": "Sticky rice with pork steamed inside bamboo", "addr": "Street vendors near entrance", "stars": 5}, {"name": "Rice Cake (\u7cef\u7c73\u7cd5)", "cn": "\u7cef\u7c73\u7cd5", "note": "Pan-fried sweet glutinous rice cakes with sesame", "addr": "Main street stalls", "stars": 4}, {"name": "Zongzi (\u7cbd\u5b50)", "cn": "\u7cbd\u5b50", "note": "Bamboo-leaf wrapped rice parcels; savoury pork or sweet red bean", "addr": "All stalls in Zhujiajiao", "stars": 4}, {"name": "Tofu Pudding (\u8c46\u8150\u82b1)", "cn": "\u8c46\u8150\u82b1", "note": "Silky soft tofu with sweet ginger syrup", "addr": "Near City God Temple Zhujiajiao", "stars": 4}, {"name": "Fried Dough Fritters (\u6cb9\u689d)", "cn": "\u6cb9\u689d", "note": "Crispy morning fritters with warm soy milk", "addr": "Breakfast stalls near entrance", "stars": 3}, {"name": "Osmanthus Wine (\u6842\u82b1\u9152)", "cn": "\u6842\u82b1\u9152", "note": "Local rice wine with osmanthus flower; seasonal in Sept", "addr": "Local shops, Zhujiajiao", "stars": 4}, {"name": "Maltose Candy (\u9ea5\u82bd\u7cd6)", "cn": "\u9ea5\u82bd\u7cd6", "note": "Artisan sesame-seed maltose pulled before your eyes", "addr": "Candy stall near main bridge", "stars": 4}, {"name": "Stinky Tofu Boat Stall", "cn": "\u81ed\u8c46\u8150\u8239\u6524", "note": "Served from a small boat moored alongside the canal", "addr": "Canal stalls near Fangsheng Bridge", "stars": 3}, {"name": "Pumpkin Dumplings (\u5357\u74dc\u9903)", "cn": "\u5357\u74dc\u9903", "note": "Yellow pumpkin dough stuffed with black sesame \u2014 pretty and delicious", "addr": "Handmade stall, main street", "stars": 4}], "poi": [{"name": "Fangsheng Bridge (\u653e\u751f\u6a4b)", "cn": "\u653e\u751f\u6a4b", "note": "Ming Dynasty 5-arch bridge \u2014 the most photographed in Shanghai", "addr": "Fangsheng Bridge Rd, Zhujiajiao", "stars": 5}, {"name": "Kezhi Garden (\u8ab2\u690d\u5712)", "cn": "\u8ab2\u690d\u5712", "note": "Classical Qing garden; rare private garden open to public", "addr": "Zhujiajiao", "stars": 4}, {"name": "Chenghuang Temple (\u57ce\u968d\u5edf)", "cn": "\u6731\u5bb6\u89d2\u57ce\u968d\u5edf", "note": "Small active temple at the canal bend", "addr": "Zhujiajiao", "stars": 3}, {"name": "Xijing Street (\u897f\u6d87\u8857)", "cn": "\u897f\u6d87\u8857", "note": "Best-preserved Ming street; stone paving and overhanging eaves", "addr": "Zhujiajiao", "stars": 5}, {"name": "North Street Antique Row", "cn": "\u5317\u8857\u53e4\u73a9\u8857", "note": "Old porcelain, coins and curios \u2014 prices are negotiable", "addr": "North Street, Zhujiajiao", "stars": 3}, {"name": "Zhujiajiao History Museum", "cn": "\u6731\u5bb6\u89d2\u6b77\u53f2\u535a\u7269\u9928", "note": "Compact museum on the town's 1,700-year history", "addr": "Inside Zhujiajiao tourist zone", "stars": 3}, {"name": "Jiuzichang Dyehouse", "cn": "\u4e5d\u5b50\u5ee0\u67d3\u574a", "note": "Traditional blue-and-white tie-dye fabric workshop", "addr": "Zhujiajiao", "stars": 4}, {"name": "Tongli Water Town", "cn": "\u540c\u91cc\u6c34\u93ae", "note": "Alternative water town nearby; more refined but a 30-min drive", "addr": "Suzhou, Jiangsu", "stars": 4}, {"name": "Canal Boat Ride", "cn": "\u6416\u6a79\u8239\u904a\u89bd", "note": "30-min gondola ride through the canal network", "addr": "Main boat dock, Zhujiajiao", "stars": 5}, {"name": "Wangting Bridge (\u671b\u4ead\u6a4b)", "cn": "\u671b\u4ead\u6a4b", "note": "Quiet single-arch bridge off the main tourist path", "addr": "Eastern canal, Zhujiajiao", "stars": 3}], "shopping": [{"name": "Zhujiajiao Craft Street", "cn": "\u6731\u5bb6\u89d2\u5de5\u85dd\u8857", "note": "Hand-painted fans, silk slippers, wood carvings", "addr": "Main shopping street", "stars": 3}, {"name": "Osmanthus Products Shop", "cn": "\u6842\u82b1\u88fd\u54c1\u5e97", "note": "Osmanthus jam, wine, tea \u2014 seasonal September speciality", "addr": "Near town entrance", "stars": 4}, {"name": "Blue Cotton Print (\u85cd\u5370\u82b1\u5e03)", "cn": "\u85cd\u5370\u82b1\u5e03", "note": "Traditional indigo-dyed cotton fabric; beautiful tablecloths", "addr": "Xijing St", "stars": 4}, {"name": "Local Rice Wine Shop", "cn": "\u672c\u5730\u9ec3\u9152\u5e97", "note": "Artisan yellow rice wine to take home", "addr": "Canal street shops", "stars": 4}, {"name": "Bamboo Products", "cn": "\u7af9\u88fd\u54c1", "note": "Bamboo cutting boards, steamers, chopstick sets", "addr": "Market stalls", "stars": 3}, {"name": "Handmade Paper Art", "cn": "\u624b\u5de5\u526a\u7d19", "note": "Paper-cutting artisan; commission personalised pieces", "addr": "Old Street stall", "stars": 4}, {"name": "Stone Carving Workshop", "cn": "\u77f3\u96d5\u574a", "note": "Stone zodiac figurines and seals", "addr": "Near North Bridge", "stars": 3}, {"name": "Rice Paddy Painting", "cn": "\u7a3b\u7530\u756b\u660e\u4fe1\u7247", "note": "Aerial rice paddy art on postcards; stunning", "addr": "Gift shop near entrance", "stars": 3}, {"name": "Herbal Tea Shop", "cn": "\u8349\u85e5\u8336", "note": "Traditional Chinese herbal tea blends; cooling for September", "addr": "Near canal", "stars": 3}, {"name": "Silk Embroidery Stall", "cn": "\u7d72\u7da2\u523a\u7e61\u6524", "note": "Hand-embroidered purses and hair pins at reasonable prices", "addr": "Main market", "stars": 4}], "cultural": [{"name": "Canal Boat Experience", "cn": "\u6416\u6a79\u8239\u9ad4\u9a57", "note": "30-min gondola; boatman explains local history", "addr": "Main dock, Zhujiajiao", "stars": 5}, {"name": "Traditional Dyeing Workshop", "cn": "\u50b3\u7d71\u67d3\u5e03\u5de5\u574a", "note": "Try your hand at indigo tie-dye", "addr": "Jiuzichang area", "stars": 4}, {"name": "Tea Ceremony at Xijing Shushe", "cn": "\u897f\u6d87\u66f8\u820d\u8336\u9053", "note": "Authentic gong fu cha overlooking the canal", "addr": "Xijing St", "stars": 5}, {"name": "Kezhi Garden Guided Tour", "cn": "\u8ab2\u690d\u5712\u5c0e\u89bd", "note": "Scholar garden tour; history of the Jiangnan educated class", "addr": "Zhujiajiao", "stars": 4}, {"name": "Zhujiajiao History Talk", "cn": "\u6731\u5bb6\u89d2\u6b77\u53f2\u8b1b\u89e3", "note": "Free English talks in History Museum at 10am and 2pm", "addr": "History Museum", "stars": 3}, {"name": "Local Opera Performance", "cn": "\u5730\u65b9\u6232\u66f2\u8868\u6f14", "note": "Huduo opera (\u6eec\u5287) snippets performed in the square", "addr": "Town square, Zhujiajiao", "stars": 4}, {"name": "Shadow Puppet Show", "cn": "\u76ae\u5f71\u6232", "note": "Traditional Chinese shadow theatre; 30-min shows", "addr": "Cultural centre, Zhujiajiao", "stars": 4}, {"name": "Rice Dumpling Making Class", "cn": "\u7cbd\u5b50\u88fd\u4f5c\u8ab2", "note": "Learn to wrap and fold bamboo rice dumplings", "addr": "Various teahouses offer sessions", "stars": 4}, {"name": "Lantern Making Workshop", "cn": "\u71c8\u7c60\u88fd\u4f5c\u5de5\u574a", "note": "Make and paint a traditional silk lantern to take home", "addr": "Craft street", "stars": 4}, {"name": "Dawn Tai Chi by the Canal", "cn": "\u904b\u6cb3\u908a\u6668\u7df4\u592a\u6975", "note": "Join locals for early morning exercise on the embankment", "addr": "Fangsheng Bridge area, 6\u20137am", "stars": 4}], "outdoor": [{"name": "Canal Walk (\u5168\u7a0b\u6f2b\u6b65)", "cn": "\u904b\u6cb3\u5168\u7a0b\u6f2b\u6b65", "note": "2km flat walk along all main canals; very accessible", "addr": "Zhujiajiao town perimeter", "stars": 5}, {"name": "Boat Ride on Main Canal", "cn": "\u4e3b\u904b\u6cb3\u8239\u904a", "note": "30-min gondola through all major canal sections", "addr": "Main dock", "stars": 5}, {"name": "Fangsheng Bridge Photography", "cn": "\u653e\u751f\u6a4b\u651d\u5f71\u9ede", "note": "Best photo angle: shoot from river bank at dawn", "addr": "Near Fangsheng Bridge", "stars": 5}, {"name": "Rice Field Walk", "cn": "\u7a3b\u7530\u6b65\u9053", "note": "September harvest season; golden rice fields around the town", "addr": "Eastern outskirts, Qingpu", "stars": 4}, {"name": "Bike Rental Around Town", "cn": "\u9a0e\u884c\u53e4\u93ae", "note": "Flat terrain; \u00a530/day bike hire at entrance", "addr": "Town entrance", "stars": 4}, {"name": "Canal Fishing Spot", "cn": "\u904b\u6cb3\u5782\u91e3", "note": "Locals fishing from stone bridges; meditative to watch", "addr": "Side canals, Zhujiajiao", "stars": 3}, {"name": "Sunset at Fangsheng Bridge", "cn": "\u653e\u751f\u6a4b\u65e5\u843d", "note": "Golden hour turns the canal a deep amber \u2014 spectacular", "addr": "Fangsheng Bridge", "stars": 5}, {"name": "Wetland Nature Reserve", "cn": "\u6fd5\u5730\u81ea\u7136\u4fdd\u8b77\u5340", "note": "Bird-watching; 15 min outside town", "addr": "Qingpu wetlands", "stars": 3}, {"name": "Tai Lake Cycling", "cn": "\u592a\u6e56\u9a0e\u884c", "note": "Half-day cycling route to nearby lake shore", "addr": "Starts at Zhujiajiao", "stars": 3}, {"name": "Early Morning Mist Walk", "cn": "\u6e05\u6668\u9727\u6c23\u6f2b\u6b65", "note": "September mist on canals at 6\u20137am is hauntingly beautiful", "addr": "All canals, Zhujiajiao", "stars": 5}]}, "d5": {"accommodation": [{"name": "Capella Shanghai Jian Ye Li", "cn": "\u5609\u4f69\u6a02\u9152\u5e97", "note": "Restored 1930s terrace houses in French Concession", "addr": "480 Jianguo Xi Lu", "stars": 5}, {"name": "The Puli Hotel & Spa", "cn": "\u749e\u9e97\u9152\u5e97", "note": "Minimalist luxury; best spa in Shanghai", "addr": "1 Changde Lu, Jing'an", "stars": 5}, {"name": "URBN Hotel Shanghai", "cn": "\u96c5\u6085\u9152\u5e97", "note": "First carbon-neutral hotel in China; boutique design", "addr": "183 Jiaozhou Lu", "stars": 4}, {"name": "Anting Villa Hotel", "cn": "\u5b89\u4ead\u5225\u5885", "note": "1920s art deco villas in leafy Xuhui garden", "addr": "46 Anting Lu", "stars": 4}, {"name": "Ferguson Lane Boutique", "cn": "\u6b66\u5eb7\u5ead\u7cbe\u54c1\u9152\u5e97", "note": "Within walking distance of Wukang Road", "addr": "376 Wukang Lu", "stars": 4}, {"name": "Magnolia Bed & Brew", "cn": "\u6728\u862d\u7cbe\u54c1\u6c11\u5bbf", "note": "Charming B&B; lanehouses with bamboo gardens", "addr": "Jing'an area", "stars": 3}, {"name": "YY Hotel Shanghai", "cn": "YY\u9152\u5e97", "note": "Boutique design hotel near Fuxing Park", "addr": "Fuxing area, Xuhui", "stars": 3}, {"name": "Shanghai Les Suites", "cn": "\u4e0a\u6d77\u840a\u7f8e\u516c\u5bd3", "note": "Spacious suites; good for 2-week stays", "addr": "French Concession", "stars": 4}, {"name": "Okura Garden Hotel", "cn": "\u82b1\u5712\u98ef\u5e97", "note": "Japanese luxury in Cathay Mansions; gorgeous garden", "addr": "58 Maoming Nan Lu", "stars": 5}, {"name": "Ruijin Hotel (\u745e\u91d1\u8cd3\u9928)", "cn": "\u745e\u91d1\u8cd3\u9928", "note": "1920s garden estate; 5 villas in park grounds", "addr": "118 Ruijin Er Lu", "stars": 4}], "restaurants": [{"name": "Polux by Paul Pairet", "cn": "\u5bf6\u6a02\u601d\u9910\u5ef3", "note": "French brasserie done brilliantly; book the terrace", "addr": "Bund 22, 22 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Fu He Hui (\u798f\u548c\u6167)", "cn": "\u798f\u548c\u6167", "note": "Vegetarian haute cuisine; Michelin-starred", "addr": "1037 Yuyuan Lu", "stars": 5}, {"name": "Egg (\u4fdd\u7f85\u6d3e\u9ed1\u5eda)", "cn": "\u4fdd\u7f85\u6d3e\u9ed1\u5eda", "note": "Breakfast/brunch specialist; perfect French Concession fuel", "addr": "Xintiandi area", "stars": 4}, {"name": "Sichuan Citizen", "cn": "\u5ddd\u6c11", "note": "Contemporary Sichuan; the dan dan noodles are essential", "addr": "30 Donghu Lu", "stars": 4}, {"name": "Lost Heaven Fuxing (\u82b1\u99ac\u5929\u5802)", "cn": "\u82b1\u99ac\u5929\u5802\uff08\u5fa9\u8208\uff09", "note": "Yunnan cuisine in a beautiful colonial villa", "addr": "38 Gaolan Lu", "stars": 4}, {"name": "Willy's (\u5a01\u5229)", "cn": "\u5a01\u5229", "note": "Spanish-Shanghainese fusion; great wine list", "addr": "1 Dongping Lu", "stars": 4}, {"name": "Ms & Mr Wang", "cn": "\u738b\u5148\u751f\u738b\u592a\u592a", "note": "Home-style Shanghainese; the yellow croaker fish is excellent", "addr": "French Concession alley", "stars": 4}, {"name": "Tsui Wah (\u7fe0\u83ef\u9910\u5ef3)", "cn": "\u7fe0\u83ef\u9910\u5ef3", "note": "Hong Kong cha chaan teng; open late; milk tea is superb", "addr": "Xintiandi South Block", "stars": 3}, {"name": "Spice Room (\u8f9b\u8fa3\u623f)", "cn": "\u8f9b\u8fa3\u623f", "note": "Modern Indian; a surprising gem in the Concession", "addr": "Xintiandi area", "stars": 4}, {"name": "Cages (\u7c60\u5b50)", "cn": "\u7c60\u5b50", "note": "Grilled chicken with Shanghai influences; very local vibe", "addr": "French Concession backstreet", "stars": 3}], "snacks": [{"name": "Ferguson Lane Coffee", "cn": "\u6b66\u5eb7\u5ead\u5496\u5561", "note": "Third-wave coffee in a 1930s villa complex", "addr": "376 Wukang Lu", "stars": 5}, {"name": "Bread Etc.", "cn": "\u9eb5\u5305\u7b49\u7b49", "note": "Sourdough and pastries; best croissant in Shanghai", "addr": "321 Fumin Lu", "stars": 5}, {"name": "Charlene's Cookies", "cn": "\u590f\u7433\u9905\u4e7e", "note": "French butter cookies; perfect gift box to take home", "addr": "Anfu Lu area", "stars": 4}, {"name": "Le Bon D\u00e9lice (\u7f8e\u597d\u751c\u9ede)", "cn": "\u7f8e\u597d\u751c\u9ede", "note": "French-inspired \u00e9clairs; the pistachio is outstanding", "addr": "French Concession", "stars": 4}, {"name": "Old Film Coffee (\u8001\u96fb\u5f71\u5496\u5561)", "cn": "\u8001\u96fb\u5f71\u5496\u5561", "note": "Film-themed caf\u00e9; old Shanghai posters everywhere", "addr": "123 Xingye Lu", "stars": 4}, {"name": "Jian Bing Stand (\u714e\u9905\u679c\u5b50)", "cn": "\u714e\u9913\u679c\u5b50", "note": "Savoury cr\u00eape with egg, hoisin, crispy wonton \u2014 breakfast gold", "addr": "Wukang Lu morning stalls", "stars": 4}, {"name": "Tianzifang Snack Lane", "cn": "\u7530\u5b50\u574a\u5c0f\u98df\u5f04", "note": "White rabbit candy, osmanthus cake, sesame paste", "addr": "Inside Tianzifang", "stars": 3}, {"name": "Sugar Republic", "cn": "\u7cd6\u5171\u548c\u570b", "note": "Playful dessert bar; Instagram-worthy sundaes", "addr": "Fumin Lu", "stars": 3}, {"name": "Origin Coffee", "cn": "\u8d77\u6e90\u5496\u5561", "note": "Specialty roaster; excellent single-origins from Yunnan", "addr": "Fuxing Lu, French Concession", "stars": 4}, {"name": "Creperie du Monde", "cn": "\u4e16\u754c\u53ef\u9e97\u9905", "note": "Breton-style buckwheat galettes; Paris in Shanghai", "addr": "Near Anfu Lu", "stars": 4}], "poi": [{"name": "Wukang Road (\u6b66\u5eb7\u8def)", "cn": "\u6b66\u5eb7\u8def", "note": "Most beautiful tree-lined street; Wukang Mansions at the T-junction", "addr": "Wukang Lu, Xuhui", "stars": 5}, {"name": "Tianzifang (\u7530\u5b50\u574a)", "cn": "\u7530\u5b50\u574a", "note": "Artist alley labyrinth; explore beyond the first two lanes", "addr": "210 Lane, Taikang Lu", "stars": 5}, {"name": "Anfu Road (\u5b89\u798f\u8def)", "cn": "\u5b89\u798f\u8def", "note": "Trendy boutiques and art galleries; low-key Concession life", "addr": "Anfu Lu, Xuhui", "stars": 4}, {"name": "Wukang Mansion (\u6b66\u5eb7\u5927\u6a13)", "cn": "\u6b66\u5eb7\u5927\u6a13", "note": "Iconic 1924 flat-iron building; the symbol of the Concession", "addr": "Wukang Lu & Huaihai Zhong Lu junction", "stars": 5}, {"name": "Shanghai Museum of Arts & Crafts", "cn": "\u4e0a\u6d77\u5de5\u85dd\u7f8e\u8853\u535a\u7269\u9928", "note": "Watch embroidery and ivory craftspeople at work", "addr": "79 Fenyang Lu", "stars": 4}, {"name": "Fuxing Park (\u5fa9\u8208\u516c\u5712)", "cn": "\u5fa9\u8208\u516c\u5712", "note": "Former French park; ballroom dancing every morning", "addr": "2 Gaolan Lu", "stars": 4}, {"name": "Former Residence of Sun Yat-sen", "cn": "\u5b6b\u4e2d\u5c71\u6545\u5c45", "note": "Moving museum in the historic villa", "addr": "7 Xiangshan Lu", "stars": 4}, {"name": "Ruijin Hotel Garden", "cn": "\u745e\u91d1\u8cd3\u9928\u82b1\u5712", "note": "Garden walk in the 1920s estate; caf\u00e9 in villa", "addr": "118 Ruijin Er Lu", "stars": 4}, {"name": "Sinan Mansions", "cn": "\u601d\u5357\u516c\u9928", "note": "Restored historic villas; caf\u00e9-filled plaza", "addr": "513 Sinan Lu", "stars": 4}, {"name": "Duolun Road Cultural St", "cn": "\u591a\u502b\u8def\u6587\u5316\u8857", "note": "Literary history trail; statues of 1930s Shanghai authors", "addr": "Duolun Lu, Hongkou", "stars": 3}], "shopping": [{"name": "Tianzifang Boutiques", "cn": "\u7530\u5b50\u574a\u7cbe\u54c1\u5e97", "note": "Local jewellery, ceramics, photography books", "addr": "Taikang Lu 210 Lane", "stars": 4}, {"name": "Anfu Road Vintage", "cn": "\u5b89\u798f\u8def\u53e4\u8457\u5e97", "note": "Curated vintage clothing; surprisingly good finds", "addr": "Anfu Lu", "stars": 4}, {"name": "Brocade Country (\u9326\u7e61\u574a)", "cn": "\u9326\u7e61\u574a", "note": "Hand-embroidered minority ethnic fabric and clothing", "addr": "Tianzifang", "stars": 4}, {"name": "Chaterhouse Booktrader", "cn": "\u67e5\u7279\u4e4b\u5bb6\u66f8\u5e97", "note": "Best English-language bookshop in Shanghai", "addr": "Shop B77, Old Town", "stars": 4}, {"name": "Xinle Road Concept Stores", "cn": "\u65b0\u6a02\u8def\u6982\u5ff5\u5e97", "note": "Designer homeware and independent fashion", "addr": "Xinle Lu, Xuhui", "stars": 4}, {"name": "Ferguson Lane Boutiques", "cn": "\u6b66\u5eb7\u5ead\u7cbe\u54c1", "note": "Jewellery and accessories in art deco setting", "addr": "376 Wukang Lu", "stars": 4}, {"name": "Heirloom Tea (\u50b3\u5bb6\u8336)", "cn": "\u50b3\u5bb6\u8336", "note": "Expert tea sourcing; staff give excellent brewing advice", "addr": "French Concession", "stars": 5}, {"name": "The Paper Lion", "cn": "\u7d19\u7345", "note": "Shanghai graphic art prints; cool, affordable souvenirs", "addr": "Tianzifang", "stars": 3}, {"name": "Sinan Books (\u601d\u5357\u66f8\u5c40)", "cn": "\u601d\u5357\u66f8\u5c40", "note": "Independent bookshop with art, design, Shanghai titles", "addr": "517 Sinan Lu", "stars": 4}, {"name": "Taikang Ceramics", "cn": "\u6cf0\u5eb7\u9676\u74f7", "note": "Contemporary Chinese ceramics; functional and beautiful", "addr": "Taikang Lu area", "stars": 4}], "cultural": [{"name": "Fairmont Peace Hotel Jazz", "cn": "\u548c\u5e73\u98ef\u5e97\u8001\u5e74\u7235\u58eb", "note": "The legendary 80-year-old jazz band; nightly from 7:30pm", "addr": "20 Nanjing Dong Lu", "stars": 5}, {"name": "Contemporary Art Gallery Row", "cn": "\u7576\u4ee3\u85dd\u5eca\u8857", "note": "Anfu Lu and surrounds have 10+ galleries in 500m", "addr": "Anfu Lu, Xuhui", "stars": 4}, {"name": "Shanghai Film Art Centre", "cn": "\u4e0a\u6d77\u5f71\u57ce", "note": "Art house cinema; often shows subtitled foreign films", "addr": "160 Xinhua Lu", "stars": 4}, {"name": "Former Concession Walking Tour", "cn": "\u524d\u79df\u754c\u6b65\u884c\u5c0e\u89bd", "note": "2-hr architecture tour; excellent volunteer guides", "addr": "Meet at Wukang Mansion", "stars": 5}, {"name": "Kuangye Art Space", "cn": "\u66e0\u91ce\u85dd\u8853\u7a7a\u9593", "note": "Experimental Chinese contemporary art; stimulating", "addr": "Fumin Lu", "stars": 3}, {"name": "Percussion Tea Ceremony", "cn": "\u64ca\u9f13\u8336\u9053", "note": "Unique fusion performance at Tianzifang tea house", "addr": "Tianzifang", "stars": 4}, {"name": "ShanghArt Gallery Tianzifang", "cn": "\u9999\u683c\u7d0d\u756b\u5eca\uff08\u7530\u5b50\u574a\uff09", "note": "Top contemporary Chinese artists; international reputation", "addr": "Tianzifang, Lane 210", "stars": 4}, {"name": "Long Museum West Bund", "cn": "\u9f8d\u7f8e\u8853\u9928\uff08\u897f\u5cb8\uff09", "note": "Private museum; architecture as impressive as the art", "addr": "3398 Longteng Dadao", "stars": 5}, {"name": "Yuz Museum", "cn": "\u6631\u73cd\u535a\u7269\u9928", "note": "Asian contemporary art in a former aircraft hangar", "addr": "35 Fenggu Lu, West Bund", "stars": 4}, {"name": "Photo Shanghai (\u4e5d\u6708)", "cn": "\u5f71\u50cf\u4e0a\u6d77\u85dd\u8853\u535a\u89bd\u6703", "note": "International photography fair usually in September", "addr": "Shanghai Exhibition Centre", "stars": 4}], "outdoor": [{"name": "Wukang Road Walk", "cn": "\u6b66\u5eb7\u8def\u6f2b\u6b65", "note": "Best at 8am (quiet) or 4pm (golden light on plane trees)", "addr": "Wukang Lu", "stars": 5}, {"name": "Fuxing Park Morning Exercise", "cn": "\u5fa9\u8208\u516c\u5712\u6668\u7df4", "note": "Join locals doing ballroom dancing and tai chi at 7am", "addr": "2 Gaolan Lu", "stars": 4}, {"name": "Concession Cycling", "cn": "\u6cd5\u79df\u754c\u9a0e\u884c", "note": "Hire a shared bike (mobike) and ride the plane tree boulevards", "addr": "French Concession", "stars": 4}, {"name": "West Bund Riverside Walk", "cn": "\u897f\u5cb8\u6ff1\u6c34\u6b65\u9053", "note": "New 8km riverside arts corridor; world-class galleries", "addr": "West Bund, Xuhui", "stars": 5}, {"name": "Tianzifang Rooftop", "cn": "\u7530\u5b50\u574a\u5c4b\u9802", "note": "Climb to the open rooftop of Lane 248 for city views", "addr": "248 Taikang Lu", "stars": 3}, {"name": "Century Avenue Tree Walk", "cn": "\u4e16\u7d00\u5927\u9053\u6a39\u852d\u6b65\u9053", "note": "Broad shaded avenue; good for a Pudong evening stroll", "addr": "Century Ave, Pudong", "stars": 3}, {"name": "Xujiahui Park Lakeside", "cn": "\u5f90\u5bb6\u532f\u516c\u5712\u6e56\u908a", "note": "Urban lake with art deco water tower; quieter corner", "addr": "1 Zhaojiabang Lu", "stars": 4}, {"name": "Dongping Road", "cn": "\u6771\u5e73\u8def", "note": "Quietest tree-lined street in the Concession", "addr": "Dongping Lu, Xuhui", "stars": 4}, {"name": "Jing'an Park", "cn": "\u975c\u5b89\u516c\u5712", "note": "Atmospheric old-growth trees; locals play chess here", "addr": "Nanjing Xi Lu, Jing'an", "stars": 4}, {"name": "Botanical Garden (\u8fb0\u5c71\u690d\u7269\u5712)", "cn": "\u8fb0\u5c71\u690d\u7269\u5712", "note": "World-class botanical garden 45 min from city centre", "addr": "3888 Chenhua Lu, Songjiang", "stars": 4}]}, "d6": {"accommodation": [{"name": "Shanghai Disneyland Hotel", "cn": "\u4e0a\u6d77\u8fea\u58eb\u5c3c\u6a02\u5712\u5927\u9152\u5e97", "note": "Fantasy castle hotel; magical wakeup call from Mickey", "addr": "Shanghai International Resort, Chuansha", "stars": 5}, {"name": "Toy Story Hotel", "cn": "\u73a9\u5177\u603b\u52a8\u5458\u9152\u5e97", "note": "Budget Disney resort hotel; Toy Story theme for kids", "addr": "Shanghai International Resort", "stars": 3}, {"name": "The Peninsula Shanghai", "cn": "\u4e0a\u6d77\u534a\u5cf6\u9152\u5e97", "note": "Depart from here after breakfast and return exhausted but happy", "addr": "32 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Shanghai JW Marriott", "cn": "\u4e0a\u6d77\u842c\u8c6a\u9152\u5e97", "note": "Convenient for People's Square; good breakfast", "addr": "399 Nanjing Xi Lu", "stars": 5}, {"name": "Andaz Shanghai", "cn": "\u4e0a\u6d77\u5b89\u9054\u4ed5\u9152\u5e97", "note": "Good Xintiandi base for Option B cultural day", "addr": "88 Songshan Lu", "stars": 5}, {"name": "Langham Xintiandi", "cn": "\u65b0\u5929\u5730\u6717\u5ef7\u9152\u5e97", "note": "Premier Xintiandi location; pool and spa", "addr": "99 Madang Lu", "stars": 5}, {"name": "EVEN Hotel Shanghai Jingan", "cn": "\u975c\u5b89\u82f1\u7d0d\u7279\u9152\u5e97", "note": "Health-focused hotel; great gym for active families", "addr": "900 Shaanxi Bei Lu", "stars": 4}, {"name": "Hotel Massena Shanghai", "cn": "\u4e0a\u6d77\u99ac\u8cfd\u7d0d\u9152\u5e97", "note": "Boutique in French Concession; option B perfect base", "addr": "Xuhui District", "stars": 4}, {"name": "Jing'an Bespoke Hotel", "cn": "\u975c\u5b89\u7cbe\u54c1\u9152\u5e97", "note": "Small design hotel in a lane house", "addr": "Jing'an district", "stars": 3}, {"name": "Hyatt Place Shanghai Jingan", "cn": "\u975c\u5b89\u51f1\u6085\u5609\u8ed2", "note": "Smart mid-range; rooftop outdoor lounge", "addr": "Jing'an District", "stars": 4}], "restaurants": [{"name": "Remy's Restaurant (Disney)", "cn": "\u96f7\u7c73\u9910\u5ef3\uff08\u8fea\u58eb\u5c3c\uff09", "note": "Best sit-down restaurant inside Disneyland; book early", "addr": "Inside Shanghai Disneyland", "stars": 4}, {"name": "Royal Banquet Hall (Disney)", "cn": "\u7687\u5bb6\u5bb4\u6703\u5ef3", "note": "Table service fine dining themed to the park", "addr": "Inside Shanghai Disneyland", "stars": 3}, {"name": "Wandering Moon Tea House", "cn": "\u63a2\u7d22\u6708\u5149\u8336\u9928", "note": "Sit-down tea-house style; noodles and dim sum", "addr": "Inside Shanghai Disneyland", "stars": 3}, {"name": "Lost Heaven (Option B)", "cn": "\u82b1\u99ac\u5929\u5802", "note": "Yunnan cuisine; the yak butter tea is unusual and warming", "addr": "17 Yan'an Dong Lu", "stars": 4}, {"name": "Xintiandi Restaurant Row", "cn": "\u65b0\u5929\u5730\u9910\u5ef3\u8857", "note": "All-day dining; Japanese, Italian, Shanghainese in one block", "addr": "Xintiandi South Block", "stars": 4}, {"name": "T8 Restaurant", "cn": "T8\u9910\u5ef3", "note": "International fine dining in a 1920s shikumen house", "addr": "8 Xintiandi Style, Huangpi Nan Lu", "stars": 5}, {"name": "Sushi Oyama", "cn": "\u5c0f\u5c71\u65e5\u672c\u6599\u7406", "note": "Premium omakase; reservation essential", "addr": "20 Donghu Lu", "stars": 5}, {"name": "Botanica (\u690d\u7269\u9910\u5ef3)", "cn": "\u690d\u7269\u9910\u5ef3", "note": "Plant-forward menu; elegant Option B spa-day match", "addr": "South Bund, Huangpu", "stars": 4}, {"name": "Pelikan Shanghai", "cn": "\u9d5c\u9d98", "note": "Nordic-inspired food in the French Concession", "addr": "20 Jiaozhou Lu", "stars": 4}, {"name": "Glam Gastropub", "cn": "\u683c\u862d\u7f8e\u98df\u9152\u5427", "note": "Casual gastropub; great burgers if Disney wore everyone out", "addr": "Xintiandi North Block", "stars": 3}], "snacks": [{"name": "Disney Food Stalls", "cn": "\u8fea\u58eb\u5c3c\u7f8e\u98df\u6524", "note": "Mickey waffles, bubble tea, carnival cotton candy", "addr": "Throughout Disneyland", "stars": 4}, {"name": "Zootopia Pawpsicle", "cn": "\u52d5\u7269\u70cf\u6258\u90a6\u51b0\u68d2", "note": "Nick Wilde's pawpsicle \u2014 iconic Disneyland Shanghai food", "addr": "Zootopia zone, Disneyland", "stars": 5}, {"name": "Xintiandi Roastery", "cn": "\u65b0\u5929\u5730\u70d8\u7119\u574a", "note": "Starbucks Reserve Roastery \u2014 the world's largest; a spectacle", "addr": "789 Nanjing Xi Lu", "stars": 4}, {"name": "Best Dumpling (\u6700\u4f73\u9903\u5b50)", "cn": "\u6700\u4f73\u9903\u5b50", "note": "Handmade dumplings; Option B lunch counter institution", "addr": "Xintiandi area", "stars": 4}, {"name": "Ice Cream at Xintiandi", "cn": "\u65b0\u5929\u5730\u51b0\u6dc7\u6dcb", "note": "Artisan gelato with Chinese flavours: red bean, taro, chrysanthemum", "addr": "Xintiandi North Block", "stars": 4}, {"name": "Croissant du Jour", "cn": "\u4eca\u65e5\u53ef\u980c", "note": "French boulangerie; best almond croissant in Shanghai", "addr": "French Concession", "stars": 5}, {"name": "Guizhou Night Market Street Food", "cn": "\u8cb4\u5dde\u591c\u5e02\u5c0f\u5403", "note": "Sour fish soup and spiced rice cakes \u2014 bold flavours", "addr": "Yunnan Nan Lu Food Street", "stars": 3}, {"name": "Waffles at La Maison", "cn": "\u683c\u5b50\u9b06\u9905", "note": "Belgian-style waffles with fresh berries", "addr": "Xintiandi", "stars": 3}, {"name": "Jing'an Temple Street Market", "cn": "\u975c\u5b89\u5bfa\u8857\u908a\u5e02\u5834", "note": "Morning bao zi, congee and soy milk near the temple", "addr": "Near Jing'an Temple", "stars": 4}, {"name": "Nanxiang (Disney branch)", "cn": "\u5357\u7fd4\uff08\u8fea\u58eb\u5c3c\u5e97\uff09", "note": "The famous dumpling brand inside resort", "addr": "Disney Town", "stars": 4}], "poi": [{"name": "Shanghai Disneyland", "cn": "\u4e0a\u6d77\u8fea\u58eb\u5c3c\u6a02\u5712", "note": "TRON, Pirates of the Caribbean, Zootopia \u2014 world-class rides", "addr": "Disneyland Rd, Chuansha", "stars": 5}, {"name": "Xintiandi", "cn": "\u65b0\u5929\u5730", "note": "Restored shikumen architecture; Option B leisurely stroll", "addr": "123 Madang Lu", "stars": 5}, {"name": "Jing'an Temple", "cn": "\u975c\u5b89\u5bfa", "note": "Golden-roofed Buddhist temple amid skyscrapers", "addr": "1686 Nanjing Xi Lu", "stars": 5}, {"name": "1933 Old Millfun", "cn": "1933\u8001\u5834\u574a", "note": "1930s art deco abattoir converted to boutique space", "addr": "10 Shajing Lu, Hongkou", "stars": 4}, {"name": "M50 Creative Park", "cn": "M50\u5275\u610f\u5712", "note": "50+ gallery studios in Suzhou Creek former factory", "addr": "50 Moganshan Lu", "stars": 4}, {"name": "West Bund Art District", "cn": "\u897f\u5cb8\u85dd\u8853\u5340", "note": "Museum row; Long Museum, Yuz, Tank Shanghai all here", "addr": "West Bund, Xuhui", "stars": 5}, {"name": "Tank Shanghai", "cn": "\u6cb9\u7f50\u85dd\u8853\u4e2d\u5fc3", "note": "Five massive oil tanks converted into exhibition spaces", "addr": "2380 Longteng Dadao", "stars": 4}, {"name": "Propaganda Poster Centre", "cn": "\u5ba3\u50b3\u756b\u85dd\u8853\u4e2d\u5fc3", "note": "Hundreds of Maoist-era posters; completely unique", "addr": "868 Huashan Lu, Rm B0C", "stars": 4}, {"name": "Shanghai Natural History Museum", "cn": "\u4e0a\u6d77\u81ea\u7136\u6b77\u53f2\u535a\u7269\u9928", "note": "Stunning building; great for multi-age groups", "addr": "510 Beijing Xi Lu", "stars": 4}, {"name": "Jing'an District Art Gallery", "cn": "\u975c\u5b89\u85dd\u8853\u5c55\u5eca", "note": "Rotating shows of Shanghai contemporary artists; free", "addr": "Jing'an District", "stars": 3}], "shopping": [{"name": "Disney Store (Main Street)", "cn": "\u8fea\u58eb\u5c3c\u65d7\u8266\u5e97", "note": "Best merchandise selection; buy early to avoid last-minute rush", "addr": "Main Street USA, Disneyland", "stars": 4}, {"name": "Zootopia Gift Shop", "cn": "\u52d5\u7269\u70cf\u6258\u90a6\u79ae\u54c1\u5e97", "note": "Exclusive Zootopia plushies \u2014 unique to Shanghai Disney", "addr": "Zootopia zone", "stars": 4}, {"name": "Xintiandi Style Mall", "cn": "\u65b0\u5929\u5730\u6642\u5c1a", "note": "Designer boutiques in restored shikumen buildings", "addr": "245 Madang Lu", "stars": 4}, {"name": "K11 Art Mall", "cn": "K11\u85dd\u8853\u8cfc\u7269\u4e2d\u5fc3", "note": "Art-commerce hybrid; underground farm and sculpture garden", "addr": "300 Huaihai Zhong Lu", "stars": 5}, {"name": "iapm Mall (\u74b0\u8cbf\u5ee3\u5834)", "cn": "\u74b0\u8cbf\u5ee3\u5834", "note": "Open until midnight; Herm\u00e8s, Chanel, Louis Vuitton", "addr": "999 Huaihai Zhong Lu", "stars": 5}, {"name": "Jing'an Kerry Centre", "cn": "\u975c\u5b89\u5609\u91cc\u4e2d\u5fc3", "note": "Upscale mall with French Concession character", "addr": "1515 Nanjing Xi Lu", "stars": 4}, {"name": "Disney Outlet Store", "cn": "\u8fea\u58eb\u5c3c\u5967\u7279\u840a\u65af", "note": "Discounted merchandise at Disney Town before leaving resort", "addr": "Disney Town, resort", "stars": 3}, {"name": "Vintage & Thrift (Jing'an)", "cn": "\u975c\u5b89\u4e8c\u624b\u670d\u88dd", "note": "Curated vintage stores near Jing'an Temple", "addr": "Shaanxi Bei Lu area", "stars": 3}, {"name": "MUJI Flagship Shanghai", "cn": "\u7121\u5370\u826f\u54c1\u65d7\u8266\u5e97", "note": "Six-floor flagship; hotel and farm inside the building", "addr": "235 Huaihai Zhong Lu", "stars": 4}, {"name": "Bailian Outlets", "cn": "\u767e\u806f\u5967\u7279\u840a\u65af", "note": "Large outlet mall near Zhujiajiao; luxury brands at 40% off", "addr": "Qingpu District", "stars": 4}], "cultural": [{"name": "Disneyland Night Show", "cn": "\u8fea\u58eb\u5c3c\u591c\u9593\u8868\u6f14", "note": "Nightly Ignite the Dream fireworks and projection show", "addr": "Castle, Shanghai Disneyland", "stars": 5}, {"name": "Shanghai Grand Theatre", "cn": "\u4e0a\u6d77\u5927\u5287\u9662", "note": "World-class ballet and opera; check evening programme", "addr": "300 Renmin Dadao", "stars": 5}, {"name": "Shanghai Concert Hall", "cn": "\u4e0a\u6d77\u97f3\u6a02\u5ef3", "note": "Intimate classical music venue; moved brick-by-brick to save from demolition", "addr": "523 Yan'an Zhong Lu", "stars": 4}, {"name": "Jing'an Temple Prayer Service", "cn": "\u975c\u5b89\u5bfa\u665a\u8ab2", "note": "Evening prayer at 4pm; observe Buddhist ceremony", "addr": "1686 Nanjing Xi Lu", "stars": 4}, {"name": "M50 Opening Night", "cn": "M50\u958b\u5e55\u591c", "note": "Galleries often hold opening nights on Fridays", "addr": "50 Moganshan Lu", "stars": 4}, {"name": "West Bund Music Festival", "cn": "\u897f\u5cb8\u97f3\u6a02\u7bc0", "note": "September outdoor music events at West Bund", "addr": "West Bund waterfront", "stars": 4}, {"name": "Dragon Dance Performance", "cn": "\u821e\u9f8d\u8868\u6f14", "note": "Traditional dragon dances in major temple courtyards", "addr": "Jing'an Temple area", "stars": 4}, {"name": "Shanghai Circus World", "cn": "\u4e0a\u6d77\u99ac\u6232\u57ce", "note": "ERA Intersection of Time show \u2014 stunning acrobatics", "addr": "2266 Gonghexin Lu", "stars": 5}, {"name": "Chinese Traditional Music Hall", "cn": "\u6c11\u65cf\u97f3\u6a02\u5ef3", "note": "Erhu, pipa, guqin \u2014 traditional instrument recitals", "addr": "Jing'an area", "stars": 4}, {"name": "Photo Exhibition at Bund 18", "cn": "\u5916\u705818\u865f\u651d\u5f71\u5c55", "note": "Rotating photography exhibitions in a Bund landmark", "addr": "18 Zhongshan Dong Yi Lu", "stars": 4}], "outdoor": [{"name": "Disneyland Park Exploration", "cn": "\u8fea\u58eb\u5c3c\u6a02\u5712\u63a2\u7d22", "note": "7 themed lands; cover all in a day with good planning", "addr": "Shanghai Disneyland", "stars": 5}, {"name": "Xintiandi Block Walk", "cn": "\u65b0\u5929\u5730\u8857\u5340\u6f2b\u6b65", "note": "Gentle Option B stroll; shaded courtyards and fountains", "addr": "Xintiandi", "stars": 4}, {"name": "Jing'an Park Tea Pavilion", "cn": "\u975c\u5b89\u516c\u5712\u8336\u4ead", "note": "Sit at the outdoor tea pavilion; locals play chess nearby", "addr": "Jing'an Park", "stars": 4}, {"name": "West Bund Riverside Cycle", "cn": "\u897f\u5cb8\u6ff1\u6c34\u9a0e\u884c", "note": "Flat riverside cycle path; bike hire at West Bund Dock", "addr": "West Bund", "stars": 5}, {"name": "Suzhou Creek Art Corridor", "cn": "\u8607\u5dde\u6cb3\u85dd\u8853\u8d70\u5eca", "note": "Street art and gallery walk along the creek bank", "addr": "Along Suzhou Creek", "stars": 4}, {"name": "Changfeng Ocean World", "cn": "\u9577\u98a8\u6d77\u6d0b\u4e16\u754c", "note": "Aquarium with beluga whales; good for rainy Option B days", "addr": "451 Da\u6e21 Lu, Putuo", "stars": 4}, {"name": "Jing'an Sculpture Walk", "cn": "\u975c\u5b89\u96d5\u5851\u6b65\u9053", "note": "Outdoor public sculptures around the district", "addr": "Jing'an District", "stars": 3}, {"name": "Century Park Cycling", "cn": "\u4e16\u7d00\u516c\u5712\u9a0e\u884c", "note": "Large park loop; electric scooter hire available", "addr": "1001 Jinxiu Lu", "stars": 4}, {"name": "Zhongshan Park Nature Walk", "cn": "\u4e2d\u5c71\u516c\u5712\u81ea\u7136\u6b65\u9053", "note": "Seasonal rose garden; best morning walk in west Shanghai", "addr": "780 Changning Lu", "stars": 3}, {"name": "Sundown at West Bund", "cn": "\u897f\u5cb8\u65e5\u843d", "note": "One of the best sunset spots in Shanghai; face east to Bund", "addr": "West Bund waterfront", "stars": 5}]}, "d7": {"accommodation": [{"name": "The Puli Hotel & Spa", "cn": "\u749e\u9e97\u9152\u5e97", "note": "Check out with a last-morning spa treatment", "addr": "1 Changde Lu, Jing'an", "stars": 5}, {"name": "JW Marriott People's Square", "cn": "\u4eba\u6c11\u5ee3\u5834\u842c\u8c6a", "note": "Late checkout; perfect for last-day departure", "addr": "399 Nanjing Xi Lu", "stars": 5}, {"name": "The Langham Shanghai", "cn": "\u4e0a\u6d77\u6717\u5ef7\u9152\u5e97", "note": "Near Xintiandi; elegant farewell breakfast", "addr": "99 Madang Lu", "stars": 5}, {"name": "Grand Kempinski Shanghai", "cn": "\u5916\u7058\u80af\u8cd3\u65af\u57fa\u9152\u5e97", "note": "European luxury with river access on departure day", "addr": "Bund area", "stars": 5}, {"name": "Capella Shanghai", "cn": "\u5609\u4f69\u6a02\u9152\u5e97", "note": "Last-morning stroll in the restored terrace house garden", "addr": "480 Jianguo Xi Lu", "stars": 5}, {"name": "W Shanghai The Bund", "cn": "\u4e0a\u6d77\u5916\u7058W\u9152\u5e97", "note": "Late checkout policy; rooftop bar for last farewell", "addr": "66 Zunyi Lu", "stars": 5}, {"name": "Sheraton Shanghai Hongqiao", "cn": "\u4e0a\u6d77\u8679\u6a4b\u559c\u4f86\u767b", "note": "Most convenient for Hongqiao Airport departures", "addr": "5 Zunyi Nan Lu", "stars": 4}, {"name": "Novotel Shanghai Clover", "cn": "\u4e0a\u6d77\u8afe\u5bcc\u7279\u56db\u8449\u8349\u9152\u5e97", "note": "Near metro; practical choice for Pudong Airport departures", "addr": "Jiuting, Songjiang", "stars": 3}, {"name": "Holiday Inn Shanghai Jing'an", "cn": "\u975c\u5b89\u5047\u65e5\u9152\u5e97", "note": "Reliable, family-friendly, good breakfast", "addr": "370 Huashan Lu", "stars": 4}, {"name": "Renaissance Shanghai Zhongshan", "cn": "\u4e2d\u5c71\u6587\u85dd\u5fa9\u8208\u9152\u5e97", "note": "Good transport links for airport day", "addr": "Middle Ring area", "stars": 4}], "restaurants": [{"name": "Fu He Hui (\u798f\u548c\u6167) \u2014 Farewell", "cn": "\u798f\u548c\u6167", "note": "Vegetarian Michelin; the serene setting is perfect for a farewell", "addr": "1037 Yuyuan Lu", "stars": 5}, {"name": "Da Dong Roast Duck (\u5927\u8463)", "cn": "\u5927\u8463\u70e4\u9d28\u5e97", "note": "Beijing duck done beautifully; the crispy pancake ritual is unmissable", "addr": "270 Jiaxing Lu, Hongkou", "stars": 5}, {"name": "Yongfu Elite (\u752c\u5e9c)", "cn": "\u752c\u5e9c", "note": "The hairy crab (\u5927\u9598\u87f9) season opens mid-September \u2014 this is where to eat it", "addr": "200 Yongfu Lu", "stars": 5}, {"name": "8 1/2 Otto e Mezzo Bombana", "cn": "\u5967\u6258\u00b7\u6885\u4f50\u00b7\u90a6\u5df4\u7d0d", "note": "Hong Kong legend's Shanghai restaurant; flawless farewell pasta", "addr": "6 Zhongshan Dong Yi Lu", "stars": 5}, {"name": "T8 Xintiandi", "cn": "T8\u65b0\u5929\u5730", "note": "International fine dining in shikumen setting", "addr": "8 Xintiandi Style", "stars": 5}, {"name": "Jade Garden (\u7f8e\u7389\u5802)", "cn": "\u7f8e\u7389\u5802", "note": "Dim sum palace; the ha gao and siu mai are superlative", "addr": "City God Temple area", "stars": 4}, {"name": "Lao Zheng Xing (\u8001\u6b63\u8208)", "cn": "\u8001\u6b63\u8208", "note": "Classic Shanghainese feast; yellow croaker with shepherd's purse", "addr": "556 Fuzhou Lu", "stars": 4}, {"name": "Caf\u00e9 Gray Deluxe", "cn": "\u7070\u8272\u7cbe\u7dfb\u5496\u5561\u5ef3", "note": "Western brunch at The Upper House \u2014 calm, unhurried", "addr": "Bund Financial Centre", "stars": 4}, {"name": "Lost Heaven (\u82b1\u99ac\u5929\u5802) Last Meal", "cn": "\u82b1\u99ac\u5929\u5802", "note": "Cross-border flavours; say goodbye to China over Yunnan food", "addr": "17 Yan'an Dong Lu", "stars": 4}, {"name": "Xiao Nan Guo (\u5c0f\u5357\u570b)", "cn": "\u5c0f\u5357\u570b", "note": "Premium Shanghainese chain; reliable, popular with locals", "addr": "251 Tongren Lu", "stars": 4}], "snacks": [{"name": "Nanxiang Xiaolongbao (Final)", "cn": "\u5357\u7fd4\u5c0f\u7c60\u5305\uff08\u6700\u5f8c\u4e00\u6b21\uff09", "note": "Last soup dumplings in Shanghai \u2014 make it ceremonial", "addr": "Yu Garden area", "stars": 5}, {"name": "Yang's Shengjianbao", "cn": "\u5c0f\u694a\u751f\u714e\uff08\u6700\u5f8c\u4e00\u6b21\uff09", "note": "Final crispy-bottom dumplings before departing", "addr": "54 Wujiang Lu", "stars": 5}, {"name": "White Rabbit Candy", "cn": "\u5927\u767d\u5154\u5976\u7cd6", "note": "Buy a bag at any convenience store; iconic Shanghai souvenir", "addr": "FamilyMart / Lawson nationwide", "stars": 4}, {"name": "Guiyuan Dessert Shop", "cn": "\u8cb4\u82d1\u751c\u54c1", "note": "Black sesame tang yuan and red bean soup", "addr": "Jing'an area", "stars": 4}, {"name": "Coconut Water & Mango Sticky Rice", "cn": "\u6930\u5b50\u6c34\u914d\u8292\u679c\u7cef\u7c73\u98ef", "note": "Thai-inspired street dessert; extremely popular at People's Sq", "addr": "Near People's Square", "stars": 3}, {"name": "Osmanthus Jelly (\u6842\u82b1\u7cd5)", "cn": "\u6842\u82b1\u7cd5", "note": "September is osmanthus season; the fragrance is intoxicating", "addr": "Old Town Yuyuan area", "stars": 5}, {"name": "Sesame Noodles (\u829d\u9ebb\u9eb5)", "cn": "\u829d\u9ebb\u9eb5", "note": "Cold sesame noodles for a quick departure-day lunch", "addr": "Local noodle shops", "stars": 3}, {"name": "Shanghai Mooncakes (\u6708\u9905)", "cn": "\u6708\u9905", "note": "Mid-Autumn Festival mooncakes available in September", "addr": "All bakeries and supermarkets", "stars": 4}, {"name": "Hairy Crab (\u5927\u9598\u87f9) Takeaway", "cn": "\u5927\u9598\u87f9\u5916\u5e36", "note": "Buy vacuum-sealed hairy crab as a gift if in season", "addr": "Yuyuan Bazaar", "stars": 4}, {"name": "Dragon Well Tea (\u9f8d\u4e95\u8336)", "cn": "\u9f8d\u4e95\u8336", "note": "Best quality green tea to take home; buy loose-leaf not bags", "addr": "Li Shengji Tea, Old Town", "stars": 5}], "poi": [{"name": "Jing'an Temple (Final Visit)", "cn": "\u975c\u5b89\u5bfa\uff08\u6700\u5f8c\u53c3\u89c0\uff09", "note": "Morning calm before the tour groups; golden roofs glow at 8am", "addr": "1686 Nanjing Xi Lu", "stars": 5}, {"name": "People's Park (Final Stroll)", "cn": "\u4eba\u6c11\u516c\u5712\uff08\u6700\u5f8c\u6563\u6b65\uff09", "note": "Morning tai chi; the park cafe serves excellent coffee", "addr": "231 Nanjing Xi Lu", "stars": 4}, {"name": "Jade Buddha Temple", "cn": "\u7389\u4f5b\u5bfa", "note": "Active temple; two jade Buddhas; serene morning visit", "addr": "170 Anyuan Lu, Jing'an", "stars": 5}, {"name": "Wukang Road One Last Look", "cn": "\u6b66\u5eb7\u8def\u6700\u5f8c\u4e00\u773c", "note": "Catch the morning light on the plane trees", "addr": "Wukang Lu", "stars": 4}, {"name": "Bund Final Stroll", "cn": "\u5916\u7058\u6700\u5f8c\u4e00\u904a", "note": "Say goodbye to the skyline on the promenade", "addr": "Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Old Town Farewell Walk", "cn": "\u8001\u57ce\u5ec2\u544a\u5225\u6f2b\u6b65", "note": "Early morning stroll before the souvenir hunters arrive", "addr": "Fangbang Zhong Lu area", "stars": 4}, {"name": "Propaganda Art Centre", "cn": "\u5ba3\u50b3\u756b\u85dd\u8853\u4e2d\u5fc3", "note": "If you haven't been \u2014 last chance for this unique museum", "addr": "868 Huashan Lu", "stars": 4}, {"name": "Shanghai Museum Shop", "cn": "\u4e0a\u6d77\u535a\u7269\u9928\u6587\u5275", "note": "Last chance for the best museum gift shop in China", "addr": "201 Renmin Dadao", "stars": 5}, {"name": "Bund Finance Centre Riverview", "cn": "\u5916\u7058\u91d1\u878d\u4e2d\u5fc3\u6c5f\u666f", "note": "Norman Foster building; kinetic facade best seen up close", "addr": "600 Zhongshan Dong Er Lu", "stars": 4}, {"name": "Sinan Road Final Walk", "cn": "\u601d\u5357\u8def\u6700\u5f8c\u6f2b\u6b65", "note": "Three tree-lined blocks of preserved heritage villas", "addr": "Sinan Lu, Luwan", "stars": 4}], "shopping": [{"name": "Shanghai Museum Shop (Finale)", "cn": "\u4e0a\u6d77\u535a\u7269\u9928\u6587\u5275\uff08\u6700\u7d42\uff09", "note": "Replica bronzes, silk bookmarks, calligraphy sets \u2014 best gifts", "addr": "201 Renmin Dadao", "stars": 5}, {"name": "Old Town Souvenir Hunt", "cn": "\u8001\u57ce\u5ec2\u7d00\u5ff5\u54c1", "note": "Jade, fans, chopstick sets, miniature Bund prints", "addr": "Yuyuan Bazaar, Fangbang Lu", "stars": 4}, {"name": "Dragon Well Tea Purchase", "cn": "\u9f8d\u4e95\u8336\u8449\u8cfc\u8cb7", "note": "Buy premium loose-leaf tea; it survives long-haul travel well", "addr": "Li Shengji Tea", "stars": 5}, {"name": "Chinese Ink Painting Print", "cn": "\u6c34\u58a8\u756b\u7248\u756b", "note": "Framed skyline woodblock prints as lasting Shanghai mementos", "addr": "M50 art shops", "stars": 4}, {"name": "Mooncake Gift Box", "cn": "\u6708\u9905\u79ae\u76d2", "note": "September means mooncake season; buy luxury tin boxes", "addr": "Din Tai Fung, Xintiandi", "stars": 4}, {"name": "Hairy Crab Vouchers", "cn": "\u5927\u9598\u87f9\u9810\u8cfc\u5238", "note": "Gift certificates redeemable in Canada \u2014 unique and thoughtful", "addr": "Yuyuan Bazaar crab shops", "stars": 4}, {"name": "Silk Pyjamas (\u7d72\u7da2\u7761\u8863)", "cn": "\u7d72\u7da2\u7761\u8863", "note": "Hand-stitched silk PJs; one set is the classic Shanghai splurge", "addr": "Old Shanghai Fabric Market", "stars": 4}, {"name": "Custom Chop (\u5370\u7ae0)", "cn": "\u500b\u4eba\u5370\u7ae0", "note": "Carved stone seal with your name in Chinese characters", "addr": "Old Town artisan stall", "stars": 5}, {"name": "Zhuyeqing Green Tea", "cn": "\u7af9\u8449\u9752\u7da0\u8336", "note": "Premium Sichuan green tea for gifting", "addr": "Tea shops, Nanjing Rd area", "stars": 4}, {"name": "Pearl Earrings", "cn": "\u73cd\u73e0\u8033\u74b0", "note": "Freshwater pearl jewellery at a fraction of Western prices", "addr": "Old Shanghai Bazaar", "stars": 4}], "cultural": [{"name": "Morning Bell at Jing'an Temple", "cn": "\u975c\u5b89\u5bfa\u6668\u9418", "note": "Bell rung at 7:30am daily; a moving farewell ritual", "addr": "1686 Nanjing Xi Lu", "stars": 5}, {"name": "Yu Garden Dragon Wall", "cn": "\u8c6b\u5712\u9f8d\u7246", "note": "Nine-dragon clay wall; admire up close without tour groups", "addr": "Yu Garden", "stars": 4}, {"name": "Shanghainese Tea Ceremony", "cn": "\u4e0a\u6d77\u8336\u9053", "note": "Final tea ceremony; thank your hosts in proper fashion", "addr": "Old Town teahouse", "stars": 4}, {"name": "Farewell Dinner Performance", "cn": "\u665a\u5bb4\u6587\u5316\u8868\u6f14", "note": "Book Da Dong with acrobatics sideshow for finale experience", "addr": "270 Jiaxing Lu", "stars": 5}, {"name": "Shanghai Film Museum", "cn": "\u4e0a\u6d77\u96fb\u5f71\u535a\u7269\u9928", "note": "Celebrates China's golden age of cinema 1930s\u20131950s", "addr": "595 Caoxi Bei Lu", "stars": 4}, {"name": "Jade Buddha Temple Ceremony", "cn": "\u7389\u4f5b\u5bfa\u4f5b\u4e8b", "note": "Morning dharma assembly at 8am; respectful observers welcome", "addr": "170 Anyuan Lu", "stars": 4}, {"name": "City God Temple Incense", "cn": "\u57ce\u968d\u5edf\u4e0a\u9999", "note": "Light incense and receive a blessing for safe travels home", "addr": "249 Fangbang Zhong Lu", "stars": 4}, {"name": "People's Park Morning Culture", "cn": "\u4eba\u6c11\u516c\u5712\u6668\u9593\u6587\u5316", "note": "Marriage market, ballroom dancing, Erhu players \u2014 all before 9am", "addr": "People's Park", "stars": 5}, {"name": "Last Jazz at Peace Hotel", "cn": "\u548c\u5e73\u98ef\u5e97\u6700\u5f8c\u4e00\u676f", "note": "Evening flight? Pre-airport farewell drink at the jazz bar", "addr": "20 Nanjing Dong Lu", "stars": 5}, {"name": "Revolutionary History Museum", "cn": "\u9769\u547d\u6b77\u53f2\u535a\u7269\u9928", "note": "Free museum at People's Square; China's modern political history", "addr": "200 Renmin Dadao", "stars": 3}], "outdoor": [{"name": "Morning Run Along the Bund", "cn": "\u5916\u7058\u6668\u8dd1", "note": "Best run in Shanghai; flat promenade, golden light before 7am", "addr": "Zhongshan Dong Yi Lu", "stars": 5}, {"name": "People's Park Final Visit", "cn": "\u4eba\u6c11\u516c\u5712\u6700\u5f8c\u53c3\u89c0", "note": "Catch the tai chi groups at 7\u20138am; a true slice of Shanghai life", "addr": "231 Nanjing Xi Lu", "stars": 4}, {"name": "Jing'an Sculpture Walk", "cn": "\u975c\u5b89\u96d5\u5851\u6b65\u9053", "note": "Short outdoor sculpture trail; peaceful before airport transfer", "addr": "Jing'an District", "stars": 3}, {"name": "Fuxing Park Morning", "cn": "\u5fa9\u8208\u516c\u5712\u6668\u9593\u6d3b\u52d5", "note": "Ballroom dancing starts at 7am; watching is as good as joining", "addr": "2 Gaolan Lu", "stars": 4}, {"name": "Bund South to North Walk", "cn": "\u5916\u7058\u5357\u5317\u5168\u7a0b\u6b65\u884c", "note": "Full 1.5km Bund promenade walk; say goodbye properly", "addr": "Zhongshan Dong Yi Lu", "stars": 5}, {"name": "Suzhou Creek Farewell Stroll", "cn": "\u8607\u5dde\u6cb3\u544a\u5225\u6f2b\u6b65", "note": "Quieter than Bund; industrial heritage and street art", "addr": "Along Suzhou Creek", "stars": 3}, {"name": "Jade Buddha Temple Garden", "cn": "\u7389\u4f5b\u5bfa\u82b1\u5712", "note": "Small courtyard garden; birds and ancient ginkgos", "addr": "170 Anyuan Lu", "stars": 4}, {"name": "People's Square Fountain", "cn": "\u4eba\u6c11\u5ee3\u5834\u5674\u6cc9", "note": "Children love the fountain dancing; parents get photos", "addr": "People's Square", "stars": 3}, {"name": "Century Ave Boulevard Walk", "cn": "\u4e16\u7d00\u5927\u9053\u5927\u9053\u6b65\u884c", "note": "Last Pudong experience if leaving from that side", "addr": "Century Ave, Pudong", "stars": 3}, {"name": "Final River View (South Bund)", "cn": "\u5357\u5916\u7058\u6700\u5f8c\u6c5f\u666f", "note": "Less-visited Bund extension; fewer tourists, same river", "addr": "South Bund, Huangpu", "stars": 4}]}};
+
+/* ── USER PICKS STATE ── */
+const CAT_LABELS = {
+  accommodation:'🏨 Accommodation',restaurants:'🍽️ Restaurants',
+  snacks:'🥟 Snacks',poi:'🏛️ Points of Interest',
+  shopping:'🛍️ Shopping',cultural:'🎭 Cultural',outdoor:'🌿 Outdoor'
+};
+let userPicks = JSON.parse(localStorage.getItem('shUserPicks')||'{}');
+let history_stack = [];
+
+function saveState(){ history_stack.push(JSON.stringify(userPicks)); if(history_stack.length>50) history_stack.shift(); }
+function undoPick(){ if(!history_stack.length) return; userPicks=JSON.parse(history_stack.pop()); localStorage.setItem('shUserPicks',JSON.stringify(userPicks)); refreshAllPickers(); }
+function deletePick(day,cat,idx){
+  saveState();
+  if(userPicks[day] && userPicks[day][cat]){
+    userPicks[day][cat].splice(idx,1);
+    if(!userPicks[day][cat].length) delete userPicks[day][cat];
+    if(!Object.keys(userPicks[day]).length) delete userPicks[day];
+    localStorage.setItem('shUserPicks',JSON.stringify(userPicks));
+    refreshAllPickers();
+  }
+}
+function addPick(day,cat,pickIdx){
+  saveState();
+  if(!userPicks[day]) userPicks[day]={};
+  if(!userPicks[day][cat]) userPicks[day][cat]=[];
+  const item = PICKS[day][cat][pickIdx];
+  if(!userPicks[day][cat].find(p=>p.name===item.name)){
+    userPicks[day][cat].push({...item, added:Date.now()});
+    localStorage.setItem('shUserPicks',JSON.stringify(userPicks));
+    refreshAllPickers();
+  }
+}
+function modifyPick(day,cat,idx,newPickIdx){
+  saveState();
+  const item = PICKS[day][cat][newPickIdx];
+  userPicks[day][cat][idx]={...item, added:Date.now()};
+  localStorage.setItem('shUserPicks',JSON.stringify(userPicks));
+  refreshAllPickers();
+}
+
+/* ── PICKS PANEL RENDERER ── */
+function buildPicksPanel(day){
+  const picks = PICKS[day];
+  const user  = userPicks[day]||{};
+  let html = `<div class="picks-container">
+    <div class="picks-toolbar">
+      <span class="picks-heading">Critic's Picks 評論家精選 — ${day.replace('d','Day ')}</span>
+      <div class="picks-actions">
+        <button class="btn-undo" onclick="undoPick()" title="Undo last change">↩ Undo</button>
+      </div>
+    </div>`;
+  for(const [cat, label] of Object.entries(CAT_LABELS)){
+    const items = picks[cat]||[];
+    const myItems = user[cat]||[];
+    html += `<div class="cat-block">
+      <div class="cat-title">${label}</div>
+      <div class="picks-grid">`;
+    items.forEach((p,i)=>{
+      const added = myItems.find(m=>m.name===p.name);
+      html += `<div class="pick-card${added?' pick-added':''}">
+        <div class="pick-stars">${'★'.repeat(p.stars)}${'☆'.repeat(5-p.stars)}</div>
+        <div class="pick-name">${p.name}</div>
+        <div class="pick-cn">${p.cn}</div>
+        <div class="pick-note">${p.note}</div>
+        <div class="pick-addr">📍 ${p.addr}</div>
+        <div class="pick-btns">
+          ${added
+            ? `<button class="btn-remove" onclick="deletePick('${day}','${cat}',${myItems.indexOf(added)})">✕ Remove</button>`
+            : `<button class="btn-add" onclick="addPick('${day}','${cat}',${i})">＋ Add to My List</button>`
+          }
+        </div>
+      </div>`;
+    });
+    html += `</div>`; // picks-grid
+    if(myItems.length){
+      html += `<div class="my-list-block">
+        <div class="my-list-title">My List 我的清單 (${myItems.length})</div>
+        <div class="my-list-items">`;
+      myItems.forEach((m,i)=>{
+        const sourceIdx = items.findIndex(p=>p.name===m.name);
+        html += `<div class="my-item">
+          <span class="my-item-name">${m.name} <span class="my-item-cn">${m.cn}</span></span>
+          <div class="my-item-actions">
+            <select class="btn-modify" onchange="modifyPick('${day}','${cat}',${i},this.value); this.value=''">
+              <option value="">✎ Replace…</option>
+              ${items.map((p,pi)=>`<option value="${pi}">${p.name}</option>`).join('')}
+            </select>
+            <button class="btn-delete" onclick="deletePick('${day}','${cat}',${i})">🗑</button>
+          </div>
+        </div>`;
+      });
+      html += `</div></div>`;
+    }
+    html += `</div>`; // cat-block
+  }
+  html += `</div>`;
+  return html;
+}
+
+function refreshAllPickers(){
+  document.querySelectorAll('.picks-tab-panel[data-day]').forEach(panel=>{
+    const day = panel.getAttribute('data-day');
+    panel.innerHTML = buildPicksPanel(day);
+  });
+}
+
+/* ── UI LOGIC ── */
+function toggleDay(hdr){
+  const body = hdr.parentElement.querySelector('.day-body');
+  const chev = hdr.querySelector('.chevron');
+  const wasOpen = body.classList.contains('open');
+  body.classList.toggle('open',!wasOpen);
+  chev.classList.toggle('open',!wasOpen);
+  chev.textContent = wasOpen?'↓':'↑';
+  if(!wasOpen){ setTimeout(()=>initMapsInCard(body),50); }
+}
+
+function switchTab(btn,type){
+  const card = btn.closest('.day-body');
+  card.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const panels = card.querySelectorAll('.tab-panel');
+  panels.forEach(p=>p.classList.remove('active'));
+  const idx = ['map','sched','picks'].indexOf(type);
+  if(panels[idx]) panels[idx].classList.add('active');
+  if(type==='map') setTimeout(()=>{ const m=panels[0].querySelector('.leaflet-map'); if(m&&m._leaflet_map) m._leaflet_map.invalidateSize(); },60);
+}
+
+/* ── MAP ── */
+const OSM_TILE='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const OSM_ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+function makeMap(elId,center,zoom){
+  const el=document.getElementById(elId);
+  if(!el||el._leaflet_map) return el?el._leaflet_map:null;
+  const map=L.map(el,{scrollWheelZoom:false}).setView(center,zoom);
+  L.tileLayer(OSM_TILE,{attribution:OSM_ATTR,maxZoom:19}).addTo(map);
+  el._leaflet_map=map;
+  return map;
+}
+
+function pinIcon(color,label){
+  return L.divIcon({
+    className:'',
+    html:`<div style="background:${color};color:white;border:2px solid white;border-radius:50% 50% 50% 0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.4);transform:rotate(-45deg)"><span style="transform:rotate(45deg)">${label}</span></div>`,
+    iconAnchor:[15,30],popupAnchor:[0,-30]
+  });
+}
+
+function addRoute(map,pts,color){
+  L.polyline(pts,{color,weight:3,dashArray:'8 5',opacity:.85}).addTo(map);
+}
+
+/* ── PHOTO POPUP ── */
+function showPinPhoto(lat,lng,name,cn,addr,addr_cn){
+  const existing = document.getElementById('pin-photo-modal');
+  if(existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'pin-photo-modal';
+  modal.innerHTML = `
+    <div class="ppm-overlay" onclick="document.getElementById('pin-photo-modal').remove()"></div>
+    <div class="ppm-box">
+      <div class="ppm-header">
+        <div>
+          <div class="ppm-name">${name}</div>
+          <div class="ppm-cn">${cn}</div>
+          <div class="ppm-addr">📍 ${addr}<br><span class="ppm-addr-cn">${addr_cn}</span></div>
+          <div class="ppm-gps">🌐 GPS: ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+        </div>
+        <button class="ppm-close" onclick="document.getElementById('pin-photo-modal').remove()">✕</button>
+      </div>
+      <div class="ppm-photo-wrap">
+        <img class="ppm-photo" src="https://maps.googleapis.com/maps/api/streetview?size=600x300&location=${lat},${lng}&fov=90&key=DEMO_KEY&source=outdoor"
+             onerror="this.src='https://tile.openstreetmap.org/15/${Math.floor((lng+180)/360*Math.pow(2,15))}/${Math.floor((1-Math.log(Math.tan(lat*Math.PI/180)+1/Math.cos(lat*Math.PI/180))/Math.PI)/2*Math.pow(2,15))}.png'; this.style.filter='sepia(0.3)'"
+             alt="${name}" style="width:100%;height:240px;object-fit:cover;display:block">
+        <div class="ppm-photo-label">Street view · ${name}</div>
+      </div>
+      <div class="ppm-links">
+        <a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}&zoom=17" target="_blank" class="ppm-link">🗺 OpenStreetMap</a>
+        <a href="https://maps.google.com/?q=${lat},${lng}" target="_blank" class="ppm-link">📍 Google Maps</a>
+        <a href="https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}" target="_blank" class="ppm-link">🔭 Zoom In</a>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+/* Build marker with click-for-photo */
+function addPhotoMarker(map, lat, lng, color, label, name, cn, addr, addr_cn){
+  const marker = L.marker([lat,lng],{icon:pinIcon(color,label)}).addTo(map);
+  const popupHtml = `<div style="min-width:200px">
+    <div style="font-weight:700;font-size:13px;margin-bottom:2px">${label} ${cn}</div>
+    <div style="font-size:11px;color:#666;margin-bottom:4px">${name}</div>
+    <div style="font-size:11px;color:#888;margin-bottom:2px">📍 ${addr}</div>
+    <div style="font-size:11px;color:#888;margin-bottom:6px">${addr_cn}</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:6px">🌐 ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+    <button onclick="showPinPhoto(${lat},${lng},'${name.replace(/'/g,"\\'")}','${cn}','${addr.replace(/'/g,"\\'")}','${addr_cn}')" 
+      style="background:#c0392b;color:white;border:none;padding:5px 12px;border-radius:4px;cursor:pointer;font-size:11px;width:100%">
+      📷 View Location Photo
+    </button>
+  </div>`;
+  marker.bindPopup(popupHtml);
+  return marker;
+}
+
+const initialized = new Set();
+function initMapsInCard(card){
+  const mapEl = card.querySelector('.leaflet-map');
+  if(!mapEl||initialized.has(mapEl.id)) return;
+  initialized.add(mapEl.id);
+  buildMap(mapEl.id);
+}
+
+function buildMap(id){
+  const p = PIN_DATA;
+
+  if(id==='map-d1'){
+    const map=makeMap(id,[31.2356,121.4888],14);
+    const pts=p.d1.map(x=>[x.lat,x.lng]);
+    addRoute(map,pts,'#c0392b');
+    const cols=['#c0392b','#e74c3c','#922b21'];
+    p.d1.forEach((pin,i)=>addPhotoMarker(map,pin.lat,pin.lng,cols[i],pin.n,pin.en,pin.cn,pin.addr,pin.addr_cn));
+  }
+  if(id==='map-d2'){
+    const map=makeMap(id,[31.230,121.482],14);
+    const pts=p.d2.map(x=>[x.lat,x.lng]);
+    addRoute(map,pts,'#c9943a');
+    const cols=['#c9943a','#f39c12','#e67e22','#d35400'];
+    p.d2.forEach((pin,i)=>addPhotoMarker(map,pin.lat,pin.lng,cols[i],pin.n,pin.en,pin.cn,pin.addr,pin.addr_cn));
+  }
+  if(id==='map-d3'){
+    const map=makeMap(id,[31.237,121.500],14);
+    const pts=p.d3.map(x=>[x.lat,x.lng]);
+    addRoute(map,pts,'#2980b9');
+    const cols=['#2980b9','#3498db','#1abc9c','#16a085','#2c3e50'];
+    p.d3.forEach((pin,i)=>addPhotoMarker(map,pin.lat,pin.lng,cols[i],pin.n,pin.en,pin.cn,pin.addr,pin.addr_cn));
+  }
+  if(id==='map-d4'){
+    const map=makeMap(id,[31.1144,121.054],15);
+    const pts=p.d4.map(x=>[x.lat,x.lng]);
+    addRoute(map,pts,'#27ae60');
+    const cols=['#27ae60','#2ecc71','#82e0aa','#1e8449'];
+    p.d4.forEach((pin,i)=>addPhotoMarker(map,pin.lat,pin.lng,cols[i],pin.n,pin.en,pin.cn,pin.addr,pin.addr_cn));
+  }
+  if(id==='map-d5'){
+    const map=makeMap(id,[31.2225,121.4643],13);
+    const pts=p.d5.map(x=>[x.lat,x.lng]);
+    addRoute(map,pts,'#8e44ad');
+    const cols=['#8e44ad','#9b59b6','#a569bd','#6c3483'];
+    p.d5.forEach((pin,i)=>addPhotoMarker(map,pin.lat,pin.lng,cols[i],pin.n,pin.en,pin.cn,pin.addr,pin.addr_cn));
+  }
+  if(id==='map-d6'){
+    const map=makeMap(id,[31.19,121.52],11);
+    const cols=['#e67e22','#f39c12','#d68910'];
+    p.d6.forEach((pin,i)=>addPhotoMarker(map,pin.lat,pin.lng,cols[i],pin.n,pin.en,pin.cn,pin.addr,pin.addr_cn));
+  }
+  if(id==='map-d7'){
+    const map=makeMap(id,[31.228,121.460],14);
+    const pts=p.d7.map(x=>[x.lat,x.lng]);
+    addRoute(map,pts,'#16a085');
+    const cols=['#16a085','#1abc9c','#148f77'];
+    p.d7.forEach((pin,i)=>addPhotoMarker(map,pin.lat,pin.lng,cols[i],pin.n,pin.en,pin.cn,pin.addr,pin.addr_cn));
+  }
+}
+
+/* ── PDF DOWNLOAD ── */
+var _pdfData = "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNCAwIFIgL0Y0IDUgMCBSIC9GNSA3IDAgUiAvRjYgOSAwIFIKPj4KZW5kb2JqCjIgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YxIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKMyAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMiAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0Jhc2VGb250IC9aYXBmRGluZ2JhdHMgL05hbWUgL0YzIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNSAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkT2JsaXF1ZSAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjQgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50cyAxNSAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNyAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1PYmxpcXVlIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GNSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NvbnRlbnRzIDE2IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9CYXNlRm9udCAvU3ltYm9sIC9OYW1lIC9GNiAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjEwIDAgb2JqCjw8Ci9Db250ZW50cyAxNyAwIFIgL01lZGlhQm94IFsgMCAwIDU5NS4yNzU2IDg0MS44ODk4IF0gL1BhcmVudCAxNCAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKMTEgMCBvYmoKPDwKL0NvbnRlbnRzIDE4IDAgUiAvTWVkaWFCb3ggWyAwIDAgNTk1LjI3NTYgODQxLjg4OTggXSAvUGFyZW50IDE0IDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iagoxMiAwIG9iago8PAovUGFnZU1vZGUgL1VzZU5vbmUgL1BhZ2VzIDE0IDAgUiAvVHlwZSAvQ2F0YWxvZwo+PgplbmRvYmoKMTMgMCBvYmoKPDwKL0F1dGhvciAoRC4gQ2hhbikgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MDUwOTAxMTQ1MyswMCcwMCcpIC9DcmVhdG9yIChcKHVuc3BlY2lmaWVkXCkpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MDUwOTAxMTQ1MyswMCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0IChcKHVuc3BlY2lmaWVkXCkpIC9UaXRsZSAoU2hhbmdoYWkgRmFtaWx5IEl0aW5lcmFyeSAyMDI3KSAvVHJhcHBlZCAvRmFsc2UKPj4KZW5kb2JqCjE0IDAgb2JqCjw8Ci9Db3VudCA0IC9LaWRzIFsgNiAwIFIgOCAwIFIgMTAgMCBSIDExIDAgUiBdIC9UeXBlIC9QYWdlcwo+PgplbmRvYmoKMTUgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMzYwNwo+PgpzdHJlYW0KR2IhU28+QmVnWyZxOVNZXnIpYUJbc1E9MyE1WmlnQ3Q4JiZHM2RkQVMjNDRaTiEyanIsZyl0JTM6YXVkcClXVyghWVMnMU1VZ3VLKFldTTpfOT1palxVXDFLPmtqNThZUDBpKzo1QSZyRixWZT1fWnRpWGEkW2E7b1pRYWZjUWBcLDM6XGVFZ2BaNmZxIU8/XUBqaTk8Vj04R1siIitNUCZAJSRPLFtgZVsqbS1IZ3EhI2tWZ2FJOC1qOS9tXi1wcyJyO0xnLVFtMEYnPEROV3NcUyYpIzRpWDpPWyQhZU9GT1NDLiNpPSRhYTo/JEBYTSVhdFBjXVtOInJGX09vNEgkTlw2P2c/WSZHY3RKKytaMnQtbSxBO1Q1JUVhcFVHXEdROVF0c2xuY3MhRUNqIS4qV0A+OlAmYzNqIVs1Tj5USlpkZyw8R082ZEAjYzBpLkssPyxgVWBvKFV1I1pVMTRsQyguKmthLCEjbkk2M2Q9NCVQKz9oY0s6byJTcl83XSdjSydxJHBeYjojIzlUIztoWVJSZUY/ZE81dU5RWyorPEZLIz5mPE9nMS9bKTVzdWAkZkU3bnEoLmI7KE45KCpwTmk4KnMhXm08bTMwXEchYF4oMFIlLklhOFNcVW0kYSI6c186Z2dhZDNbLjluKU0nOXVNTiY9bD5YWEYxI1coVEcxXnI+cWk8WU1WTnNrJzQ2RyQiLiNWXyNSIWlBSVEiNSIuI0UrLk08NTA/PVU2Y1kncUJWMidSaFEjaC9lYT1aNSJMYylcTlBIRz5eODE5VEAwZjlqIiYkVFYhLT9eQlkjT1g7czJuN3NMZl1MVC8xbkhnPiZsMD5gbkhCJlsxaGdjNiw4amgxKy9ZJ0ttZUpGU0pJLUQ0bk4/TjpSO0ldRGFdLGwxbXF0a0dMXF5ENTlSYD1pJiJialRkRDQ3UV9gWSc2M3U2LytCXjglakY0KHVjPnE2IyhiKEEkLDhlRSc0Kzc9MVheSlhtZ1g3XzNfPmhRTi9wTTxrKmFwMmE+YXNdUjBnbGpRZDs9I0pRLVdiJ0ElLFU9WE9uZmk1cixmalA1TkMmJW5gYDtrYmRfUmJQcT1tLnBaLCItPydZWmAzMFdgZUsjQFZYM1RXa0luN0NtSzIhMFs9ajg6OiNbZiFwbS9eNjNrPkUmKiYrJ2tFcEg8J2lLPlJdJjJcI29vUTQ9IzA/KyFDTmQqZ2lhLS8+OzxhIzJYW0UxcChuLD05ciZqMlApdFQtP1Y7ZlI8JTosMj10QyNxRG5gLHQtQ0I2NFpuOyVCXV9DUVhEblhQc1slSVZZNC1YRituL1lGclFWJytFL09PcyhiLkAzTmEwLWlgZXV0YEwjOVVqPy0oWzNoITRJNj9IQk1Da0RxX0xkO0dvJ3QvUC1IcVVwNko8VE8tPS4hIztEKG5cdGFHRlUiLlJySltiXVBMM3MqdCVVS15FOkQ0WltwR0JQXyVOW0hXMmkqLTVPUllKPjtdWShrWTY4L11IKzlnZ0E7KS9xWCI2MUJlb2JfXlFYWktiQnMrIjdHaiVQS2ZXamo9WGdFWmg3ZCRWRCdIZHJIUy9XQ0k+LU1xUnI+M1UpWylgKU90JyFHTVRTZDM5RUlbZ1JrMD8kZFw+WHMiQF46XjJJRCJlSFdhW1BcMW0pWm4kOj4tRmpvNFwlSS9KUy4qIVQ6NUJZQ09TdS4jTHA6RjJmQGRtTjBaQWxaOHUkMGdPcms2LGJfRWdhMjN0aU9jX3Q1ZVYkQz9OOVY8M25AXGgxTi1wMG1JJkd0YkkqMi06VCRmIyM4LnQ4PFBKQiVTQW4yXyNackwicDEyYEIjNVQqKG9QJXA1JGZJRTVFWkpSLjI6PitBaks+Sjk+LkQqMyowSlkuNGZMOjs2WD9PNFpwPWI1ZV5SaCk6a1ZBbmk/VkxaNytYMytEYFY0VjU7R3BORl5TS24oWkMlOmxpdSliZ2AvM2VIZEssVzNJJkk8SS5mIVQhKWVpNGlqSlgiWSdSM1cmXDUoSVBVMVNAW1sndWp0cSo1ZlJMJScnU1VeRk4kTEErJmdCaGAwVWQ6bzI0J007ITstLi1fLVxsLmZDZ3QrLloqMTcuZS5PLlE2XFZXU11NMUJRYVhuWUtoNTJLL186IWcqUD9zMS5OSUdQRj5Vamo4W1VLTys4a3VhITtgMl0pcEVxRDk4N1FnKFlQIW8pTFlaKW1YVU4iKDdqVCRfZiE3WC08K2dWWVMmNi51QFAzISVhU1dELVpjXnEjaCEib0Z1XW4qTzA4clhzVzQzRE0nN01kQElAcyF0QSxGZlxhUDY8Y0RjazBiYls4KCYsP0tEUWRjTz5WXCRmKW42NCg5TyozUEQxT0kyOnMmYzxwPUEyTEI4NVVyMktWQz5IKDVxP1dvVFxzXlNgRkVgLFc3cEs7TWBUYzM+IylGRm5oXj9AU0BHSnEoPVE/Ly5dT1ElZCo7YFwpb2MnOFZLOStrOEclQTI3LE1CXDdBdDFNOWVPL1EzZUlVaWg0PlVYUm1rSEheWDpabygqdHJGJEknXDUmJT49MVE5WjEjTThTSz1IWjxIJHJuV08wXFhxJXBhbiVYXGxIbDVgLTIzNSouPF9AQisodVRTZk0zTVhcWGNgcWQnNlI6clVESS81Z1NRXl1cc0RvaS5uaWt0JWRUTChSNk4lZzk6aGU0Y3VvV1lJTEUoKE9OSEYiVDBbZCk8QF1nMk83bThPYWM5X0UhdTFTXk5kOlpQRElnS0w4UUUlMU9daFUqY2Y1X1FxKG4pPGAwPVw8SiVsbEBOcDtvcz8hKFIpVE1KU2VGdXV0WnEkV1EqSDBuUy4mWiVvPlxnQ1EjPFdBR0JLKyVfQWtbVjlkUjtnTk1BKmBNQE5TLW1dTUVtSyM9cyVfTCNOazZQWGEsXjhfKTgycmF1a0pdQlVDKUFTYSoocGo/PUByVlw9LzE6W2UqZ09qJFAiLU11I0pHI0VFLE1SQXFdZiFBMik1bU5SRHFFOSkkJVdFRmM1Tlo+NFdkSExuTzgjJUptPV1wNUtJKiFtRnQ+LVBuNFM2LFgrTnMvYzs6Q08sUyxFVDVQMz9zPm90SS0nTENwJCZsOEJNWmxhUzhjXlNhXWtea3NyaixuUiRyPCI7UGdLYFA7cW9mW3JKXEk2SnIuLEIxPUkzLiFuPVxCb1ZxZSpKRWxZQGhyXF49Y1o2J2lxL1JgRHFQakw+NW10LkwmaWhqM2xSaGFKNkZjXTs7LyEzNzxVMUFtWTpNL3FDP01zT0M/JVJ0Ty0mMjxgNk9TZzMhNEYhV0VSVScnNWVWIjoqS190Yi9lWyohUGNwc2hrcSlxaERyJjFvKkZwYjJZZ1M0Ki5NWTEpbkFPLDQ8ZDNCKlFDZFJgP1UoZyxhL2onPSozYWU0ZDdzMl5GQnJwI09mQiJlWEgmbGdvLyw0NjZZITN0M0BZQitrQk9DaFZuKUpRPGlxLDlJQT40MCtiajRvPT5VRT9Say5OKlUob3FhLDBILzlDSnVwT11jVVtdRmAib2o6J0dyMjgiYXNfMFdmT3MlLTgyUmZGVUQxS2YoZCxZYXVLcmkwPmBHUForOXFMKUEmXj9YbEczamNrY2I8ZShoT2NJRkE8WWk0a2BcLidDPmBeU0IyJlNPOTAlMT5raUoxOWQxW0BxRT9tcDlwbTdGLm5sWXNpUy00X1NxNT8qP0BWN0pma0RCXV9KOC8nUFFmcy9DSU1CQG0kJVJcbDphPExbMWcpYDc2JSRmQUJZJzVYQjFTYHNwT21yLnNTWkdHal0wOiRVTGBUX0RPZyJlJXFKMyNDZWdbJlwpQmxDJStvSlgnOD4laSQ0Z0Y+bnE1P2Z0KlsnaXQ6XiREI1Frb2JOWz9Nbys9RFE5OTwyaGVgVV1nb3VHNiw8MypfJi9ESV9CMS9PWi5daUVSSWFlMihKQWtkajAsPjxvYE5NNzA8Qio0WUg2VzQ9UV40PDEvbGwzT1NHJzxDIyVDRytTNFsjQ3BhaUNeIyReUTZjSFtoQz8jLTUkIVhJRkxQajtLbHIsbXU0JnA/aUVYJjRHaEtRJmlgJy1ZQ0gkTFA8a0EtMTopc1paTlFSVWZyVWorTkdfOTlPJF49MydsSFMsT2xRY2xoRmRPQHNbUVxERDgzbVlWZVU1UmYrWVRJJTZXbkExSSkhRjprSywhXTxgYlY9NlxjOzRUP2NKaSlBRVJGITFEQjEuQVlUMEluSDI9XCxuJyw5WyUpIyxWa2BzJ3BFaFsxbGkpSWdvWWw0IlZnQ3QxRUckSkReXjcxUStlbEk9UlxyYGdhSlo8QmxfOGwtL0g9Ii9JVGVfaE9nVjchJWQwVSg+ZU9cNjFCM1lRLnE+KTVPLT1CPDpSQGY+a2FuLCFxZmJOcG1nQFF1YkM/UCdqaiROND1OLz0wY3QnPW9lVyFMWFtCMGBXaSU4YXNjWDU5OVtqUnJTImhANXAtVEBdWHAhUjdGcHRaZldIZkknTl5QUkAyQlskPGtbb2hQTCgsT2BfNzdBbnI5c3QiZ0JgK0kqYCZqLmhtdTU/RiZYLUBySyFxamlncCUzcmRcbSY4YDpHRkJAXDtbQFxpW1dzaz4rcDdjKDplLyM6dGhZZVZEXitUaCZiWjgtQihaZTJCcDspKW5ePS11dCsqYURqPCNsMWJodE4pQ1BGRUkuMjstJSc3T19rQys3XCtZcyVdJFckVkQ2M3V0OSFgbmRlYEcjVShLPmolPCozQV4mbVhkMEgyLj5WNFQpbzAqa2k3I2QqX2pvcHEkMkh+PmVuZHN0cmVhbQplbmRvYmoKMTYgMCBvYmoKPDwKL0ZpbHRlciBbIC9BU0NJSTg1RGVjb2RlIC9GbGF0ZURlY29kZSBdIC9MZW5ndGggMzU5NAo+PgpzdHJlYW0KR2IhU3A9XWE/Syg0UEZKZ28hMSM6OTdLMUdKPWAnWjhAc1xuPG9rQ2RncCNoTiFqMTwuN210J15PQyc3Wk5NYzIicFtpPThXNlhHWGgvdTxYYD1eMnBkPVYlckFoWl8xJlEmWUovQnUzIWpPUWlgaSY9XHB1KEloN1deRCsjXF5nOD1mMis9JStoZE4+VEg1YmZIW1FdR3A8amRPZl1NKG09OFZyP25oUVQ1VEFyNDpVYFQxNGpQZyFkJmBySENtYmZISjEhaStCaGdaKl4qVm1STGhDQ206LUEiU1ZzJlVtTFZecmc3VFZDZ2lJb0wlXDpqVCpPLWxTTCQjalQ8MCMxNzpeO2NiaDxtUURzcik4b2lgdVMscjBBJUlbbypIKDxrXz5TWSpXSVtnPE5qOmotL2IzMEZObURacUosOTVXS3FGK0tYX0xFKS1gT1NyM1RfYipuPG4yaTYhS25bQEExLzJmVzt1TlQ0MDFTWmhsYGAnTk9sISUoPnVmJi1nZjpzQmtqbDgzLCxrZiNHU2MtZ1M9RllFQkVKXkxGbykpcTxIUicnazUzKzMyWyt0bzZIalo2WkxDZ3MubkNgQSw9MVkhaGFOb2QhMzdaTEZaciYhTi1XZl8uQDIvO2YiM1kxRWpsWkcmNG9BcWZeL0QhKTFbSkklai9UPTYwUjwnLFAtXENtbDc9NWwvUnRjbCYmaStRN2RrKHEybFA/ZVI+aF4rU1pZI2tKKW48bCpuXicmNmQ3SjFeQWhjb1xHMFQ6ND4yIj9ZQlBELmRVdFcjdS9OKHA9YnNadGJYbEo2NmwnVGp1MTk3T21EPi5ET15FXSgyJS1ROWthTFcsLkVjPCItWUQsJUVCcCpGQjsmY1RXXzFRNls3NWxiYUlIPFlBcC5ILTtqTFwiVitbVzs0bktrZSg7MklNUi1XP2lVbFtJR1YmXkBRODw2RVYlKj00ZGsoU0YoZjlKLFFGKissLyMlVVdpQzYvXUt0YE1yVEk+MkFiJGQzT2BjVyJQN3RcTWVXS1VGUz1MciYob3VJUmI4PTg0Xzg8aEo/bzNmMz9mcmwyODknPTg2aSwzcSJPdT8+ZS1xci1QUSlaMC0kOTFfWGNNNVdeWDk6XkBtNFVBIldYSUpsdFlsZz1GbXI+S0huZjEuVzgnXTtuaUouXGVZSjU5L0cjK2U5YjRyIjZXUU84LykxVDJEXE9cRlJcRyRjJDolcz4vPT1MbSdwQyVaZ1VwYzhAVy5DTmVoQEBONUBZY1hqM1UuRlVbWHIvV2QuSmskUWZiMTIiZE5mQ1omTG1IWEtZI2hOVGplMzlAXEQ2TzRlVCZrQEFMMV42NWczbiVaYjw7Z3NwYCdXbiJEY0IkJjNWM3AzSlhrJV5LMixtVWpXRCdYbFQ1V1BecmxzSy1vQUBHU1FgRTRUKDZoRC5NPVVqWj1RaGBVWFRjLWgvYDZeJ1FlbTNZWCVWaiRxPCJRZjRALUYxWmUwTEJVJ1YpKTNrYXV1cVskKConVFVJcm4lTXJOW2hORi9BPUI/O28pQiZhdFRpWCVfW3EuMCkkY2FEK1JgSEwrZzAxVVVYJikvV0swcGdXMl1CT2BHYHRTS3EpOSd0TGhOTD5jRVlgTk1pSSZhMCEhQyVAV101VCdUTVYvS2c4aEwicEtadTFSQHA8aC5rRCNGX0E9U2dKcjI7aTNfOzo/YmF0a00kQDhiJT1lPUI2UScodFtwcEpRMj8mIyJKcDFLdUQkW1JfMicnUElBLlhGPmc4TE9sVzoyX1w5ZVxDQXBLX1dIKV1mRlphKlVkWi9tJFpdZlE4KWVWI1tyVSIjVXA3Z08mPTJtPC4vPVRbWksuIVs7S2lbckl0S3JtaCJZImVFJ21UZTsyVmQmTCxETVpyIVAjJXEnTSw+QGwkZmlITWcqT2JnZUJhYjhIKFU2TVhROk5RRFFdJDUtVl5xdCNgcik7TE8nXFJnLGpCKjNpbDtJQTglLldMYV07aGJicXIya2VMWkQuTXU0R1xOIWJyb0dwcnRXKjQrI0hoJ2gzU0ZEXUNsSFdBP200ZnAqWjZcUi5QQjw6VVNRTyNzL1BxLSdwR2c3S08wWHNQcVpzS3N1PFxwUiguMkhvbD8kI2o8YFpfbHFMJ1Y0PFZKbTkqIVVBX3NjR11TVG1udS8xL1ErMk1lPz05UTYiU15lTk5PJDdTRl5ZbTVhIlBCOT5NRF46S1lYXWYmTSEqYTc2UnBRQytdPmRYLU1WM205Uy9CIjJwUlhBTWQ/WVdDXi5SQTJASV9INDhWZU5rI1EoSiJMaXI3VnFfaTMqJURoLSpqbjdpa0NiJjNdSWIqSClsZUN0L0IjYixgIjRtT20jUlNVUnRxUGpIXUNgUkBOLS4iLy9zJl5TNnBBcyt0QjBZSil1RkRyLUcuRDAuKVNRKyM5TjtFOzk2RVJgSlc2I11GMyRdZjg3dE9WQ1EvNSs/aDldRE5IYmUpXnMzYytVLTgzYllZbHRuSE9tW2Q0UUg8NEdQJUg4U2k0XUdxSlNOcWRqPSQxVzBLX1VgT28rYzJPOCddJWdfUlwnS0QsRGE4Jj4qP1NJQEVEVldfZmtBZS9OMiRYanNya2MvSiRCXEYtYEc+OXA7aWhxRGEtVmoqImxuWlxFYkkxIi1oMSFETzhrXydWRyxIXFAkOyk0VGopOE43TkYqXDROOCFYKFMlUzItXS80XUsvcmZnPFFfMitwbEVkRWpuN01yRFdLNy9bJ24iNDxRSGMlW0JLZ3JcNShLK2QrI1E0KF9ERHEtYENzJzsrJElcOiohXV1QO3AwSklscjddW2xjSHVgPVI6Vlo0OnNZVGk2W2E3aldXXHBUJ0tgUTFlRiVsKEhIJzphdCNScHBZOyZLKi0lTThnR2pePFJrSSk0SU9tX19cIjk9OzlyU1dTalhCQy9RKlZKZS5fLydkT3RDOEYpRkRBRzlMT3U8SyFALmBKIUljNyZsSlp1aDRMRl5OPl83MlBsPE07aVwtMCJYNDY5QGBoRnVaUD5SQTMjN0RGWlZoLS4sJWwyV1Yxa2FyXFZuRklybydkODlvWm5dRz9PLChlWCMpNVsnTTY6VyJTV2M6LzRsNCJQUHNJNVE+VUxbOUl1cU4qOlE2NzhAaVNTJk9fUmA9T1dzM2pMQlFhaitHRU9sIV1XNVEnZVs9QmdrLlBMY0c2ZC0qST5YIkw4SiYoVUdETzBMPW1XbidcTjFPW009bUBkKGowXmgoKjNQbUsuOUYvJ2lrMT8tXS0rKGdKL1lbRFIqPDdqciZAK1E6OVZjKlxfKnJNS3NmNWE9QzBiKiciVGdxWlgzYSRQXDE6NkZVTDJOUEMrOFIxUTsiVGtWXjVIb1JtTVcuYDZaal1HMitNIT8oSFdXYlAvMTJpWTA4ZlZWLSUkQFtSVS82QiRLLzk9YF0pRm0pTSlJI2Q2Ty1iSG1rIiwoXV0vQUcvPVBWVSo9WTk2bkAnMzRobkhSP2lHaWZSRjlEQzdzK0UwOCNdQyVKRTslVk9LUihFST5xdCZcJi87Oio/LE45YDdHV0c9VG1CWC8jPi8hMkU9XC5cW1duYFlrTnEvPSxpcGFDZllfM2s9Mz8mSCEqO0otITJTIlhodU5OWldsRDg8KFUiKHV1b2BvLUcjPzI+TEUmRWFxPlRvQCYwWlY8RlYkO0ROS0hFV2RIci48Y0VOQi1MYDxtOzIyR1Q3X1lXNjVhLFVzJnNuM0lZQFxpVE8sPyRgKkZfYEtLTm1CcHB0UEdoN0I1PCVgbTFMZHE7MmolX2xVVEU2MEk0WypAVmhhajA2PjhSPGY2Z1pUUEhqNmQmRzBoZkhDJ2I9L2puUmFNNmUkcmZROko5SjhPQmdXNFF0QmQ6IjxOPE5TND5EKSVaYC8oYUhBL0VJUylOLEVnITxPYiM4MVctZElLVUxeSmFULSVRczRgZGlhT2lFJVJuNkJAaVgwRzhEZ0JHZiQ0KHJpc25eLnBLUSVQXF5nXVw8LGVvbCdbO1ZMUFBOQnVAPVNhWlQrSTJmVkknRWIjUzpFRlhwcUY2c2o3W3MjW09YbzJdIj9ZMigzP0hYOlVJbyh1cCZeM2M5M1xRRXE9NVNsNG1UZmE6V0hrbiNBRUU5KUprZ21vcSEvKVFidWhjPEEzV0FpJTdxcSVcVHU/VDBjTihiKzRRK1FdQjIhZmU9PHIvcE9xPjc4XVJFVmYvQVNdK1FmazU+b3RcXUAxRWxMK082MlVKaGElaGpTMmpnITA4Tzs7aFJENSY7THJIMGsoS0AjV1ZvOG1tbjAkXD5AQl9AdT1uX3JCJF9ELyNgcSlxWl5cXmBRRnFiIk5mRihIVW48PEQpPWRPOm04UWlNL2BKc2NpVSM8R2RpQChsMDorPWZTKCUwV1w2O0dLKyxebyUhOHJiTUM1XS1LZiUhLWBBPj9uTXVFajVVNFlDSDUpSj1ZL1EuKiZVQC5yPHBkJ2FzJFFkRnVYX0JvQjNxaSlgUWxVVk42U1EsQkE8XGgpckNxKWo2QXMvbVJZZ3U5Q1IhOjdXYGM2Qy1WS2l1P3MiTWU1KjptZWNkU1AkblYlVUMsI1YhUV5mJyRgVyk9RVNpY3BwMyRPP2xyRE5fWFYlQzM1ME1TcmZURz85JWc9XWhbJEpubjwmSWxMS19KMDtnVklYPC5rKC9ANlBqNzVOWXJyJltzKTJoQ1swUWNtVj86I24lJFJZbSQmOiJHO251Lm4mcl0lakZkOHE3V3EjQ3AoJiJ0Y1ZoI34+ZW5kc3RyZWFtCmVuZG9iagoxNyAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAzODQ0Cj4+CnN0cmVhbQpHYiE7Zz5CQU9XKDRPVDUzIk1GOz4vcSZmJFY6ITlaL2EpQFAxSSVraDQ6UEIhKW8hJ1JOYEgtOVdVR0VEcjFaZC9zREc4YkFsKVM/VTNVa21jU3J0Nyk2YFpVNDdxa0oyXkRPSTg1O3AwViY7YyRqV1hPaTlnMFVWXF1PbDhPKlMhVldVJUxxRmBFZEVCdTNgLFdPRihUJktRdCVyVTtEUUtNL00qMDswJjVKOGBQMVtuKkQlKyJaImdCR0pEQiMnT1QzPUM1Qj4lI110MG1sU2NccWs4Ql4uRV9BL1IkQF8/LEdbZlE2aEduKDtXIjg3ZSVEclI3LkZLOVdlRSEvYTxCNyNoLVAtQiJLa2osVXBMTlwodTBTZV51Q2RiNHRPXjk8Xys1ZHNcLFkuQypcUHIpKlUxOWwvLlksW2BPMyczX1svM2VWX2w9aVFTSUo6QVRjRkckJCkhaExVUFlOPVBLaCsjOC8oWTxeOj0qJmQ1YEBNUHEkdVhYOEIjI2kmVHFXRFJWKEc7RFphZEdcMyRzZWJjYl5HO2xyTjwsOnE3K2ZvVU5dXkpmUVpUVjBnZ2o1Li81Mi4iNkdMY3J1J1pFc0sqSj5TTjdiX0QqcVVoRyQuR19eUj1KOWora208SnUxZ1RqRldjXCNGXixuW0lJWlkzRm50bClZbCw8Kio4JXJnIXFaUz9Ycl1ST2NAQ0RnOF4rUlxVZHNxSi8pQU1zcVc3LUIwPVlUPVZIJ20tS1gnKkYkSCllPnQoSiFjPGtGNmJmOlkzKy80PTlVN2ZsPmFcbSNjNlo5Jz48IT9oYU87c1kjb3BkPGJocl5jQVRKP1pIKDx1WkdFZ2RtMkVGWy5hSztWdE9RQG1yP0QiaWBMSypwIW1IMTNhVWVcQmpAP09uLFhHO2BWZDZENG5bcmBVckRXKUpVN11INm4/TWs8Sm9xMWAvKEExWlM3MyZALytuSW8/I2xWNEFFYlxzVSFEX0RFO0Bsc0s3MztrL1djVmRVLlVSM0osZitMYSxCLDRWTmNoXHRWb2dLbj5RJyNccFlPYXNfLF5XaWpsXXArKCVVWSRic3JxQC1zOGdNcEMrVVkiImUhQVcyTFRaMzotXE48aGhtXyNqQUV0bzlzcFwidVhyM2BpOnI6XnFdSiZiVW1jX2ZGNiRRbmZTOS4mcXVFPWNBdUkvMURrUjAqcVJdT2MzRjYtV21wOHNFOyxnTkVqXjVkQDg9UyNNaiVcQ1tzMS9xWmZrPzVkb1diXUVRaSI0O2lEbDZbWjctVCguJ2tJRjowbk0hVk0jQ0hcTzpcbjBFb1BIc3VQTiRJT2c9KSE0LWQmZE9lckw1RTE2Py5mIilOOnI3VDxJYypvZnRFQlItTDc+NXFmXTVwZjVNbm1yKkpMXyReU2ouLyE8IkZlNjZDPGohW0sjcF5kbkA/cS4tJTd0Qyd1a0hEXUdrNDBUSVlSKCdRJVBCKFoyXjFzKT0oU0E7Q2JpYCgqdExrK2ZAYENiM0VAWiFAOk06ZnAlS0Y8b3JMTkpjY0o8MDEoZm4/KyEoJEczRllaLFFNX2NKPFVBMkNgTltLVVpbPE1wJGxZZ01GKTldalBtU0hKQjVmQmwnUCM1Mi5fVWEmSTtnJm0lUnMidUtrb1dAWCZxb1lXVG0qcCs9c1IrOSs0XltNWW84KywuVTMjM2YjTig8TkE4SEpfITRIKEE1JiZGQGEoLShvaWxHYWwlY1dPTWEvQm5bTDlVUXQtJmQuRDVBR3JWXFtmQDFvXmpfdCtCaUU7ZWc3YD5tPTtJVStCQUBJX1l0USMlM04lPjgubCdWbF5MPmJebUIpLTYkNDc8UVsyTk0xO1pQXWtoQzh0MHNmbUxTP1RlSHQ5NDRJbEhRWSloUF88YVhgJytKYWJuS18vc1pAQGM2ciwvWTBDLy9DQyxkWStmNiRyUU5bLShOJFI1LlpTJCtHZVUpPl5wQyJZVE1HVWwyLysxWWhXXEtjUCRHMlEsI25fNUJOQG1sUThlQDlpWmgqaVZLSWVrRDh1VFRmWlAqR0tNQyUsK0xkLEpGOSlXVnAvOFskKjJvYENqREdvPTdbRE9hX1psTio+bDBfTnFxYSZubiNgY1M6a1lDQixhJjtnZ2dKUDslYkgqUy4pWjBeKG9XSlw1bnUncnFbIk1MX2RJJlwuMTVXQmRxbkpTIz1wb2VsaT5bLGJpIl5qNiU2LyYqPS4rXidLIm5OUl9Zay8kSDAwJy9EdXU5L0J0VSZDcVtWKDN0TDYna1khVUFfVypLM3M7b2ZbUlwjVThFWT5AMzp0ciJpMC5XMytVRVwwLDMzRzIsJEFpIyQxOWFnZVZZTTQ7OWpLOCxBKF5uWjg/LU5pVSwkajYxJjBFZjcwTT82Z3VzayY5Ik8yYGUqa14rbXRScEtlXz9FcjwlKmJOMDJNI04jblw6ZEpqYGspaDg3WENcQGc3YkEqWSFQZHNSYU08NTxgMGtEc18qY2Zfb09oKlAuYkxROThcJEZeQUI9Ql4xI0Jhc1omKSghXisjMDpcS1Y/V2NVI2JOY1VhdTJuLHBhKUBFZXRuRGokWV9aWyM/KzVUdGVBX1owITduIyxdV1ovSmRwYkcrVzhgXzw7LkVbQy1oV14+NTZvMk5HKXUvSjJ1JGUkYkR0LCNdMT1UaiNwSmVvV0EyUThXbDRNazZ1aUIiTV1WOlojLSgjZkokPEQmXjEuaio1MWpHWUIzLScrNjVVVGtIUEBlbD1SJWhAUEtlKF4vaUg1NyQ+JVc+cD4+a1Q5PVFhKUxdO0RgU3JVKS4sLG9YTiswQzQnYGJTTEBvRGZhPGNvIzRlRi9HO0cmJjJlSSEvcDgwJGBMcnVdOVlfYG4mLmEmMTBnL2MtU2xedUYkViQnbiopPEUyWEU5QkoiT1AjJD87OChlZTJULXQia2RbVFdyVzY/P3MtJFs2MG50NmdsNi5wKV1ZOUxCOi00QWlkWC5YQlEqOytrKytAMkJaQjNhbkRZRVcia0hDQHBfL0pSZTpoa1BpZU9PX29ab2hfLW5oa21iJGYhZDhAY2dwUThETnEtY1VUPHBNckU2TFxYKmhIXiVIIz1EI08kUVUsLldHLGFfcCRfUCZjbFIvYE9XWVVZMm9gPXAtJkZfVzM5OGg3XDk3MUhPOWdTW3MyYTkhQ2w3YVFxdS04ZjZ0WitzalYncUFBQ3EvIVMoJUtnV2tRUD1WajBiXUdPN2s2VGVLXW87XW5IbVhhLzI6QiVsaU5RKWknNzhZSj4zT29WYGk6V0xYLE4+P0QuRENOL1dtRFshI15hdUJKNG5DMiR1JTxdImM+YUs+akQ8WnEiZyhGJyY6JzlkO0oiJ084QjlgNnQ0bz4qJitvPnQzMkMsNnJyXTYjSCleW1JaMj9QLEIyQGQyQjUlMSlqXGxfM2xfPm87KCZXZmFaL0dUIzNXIm4rKC4pUSFNOjFSbFw2JVtjdWBIa1VNaTgnPm0uRDsqSXVRYCU/MSdYPFEpZDVMbD83ZzcrXF5bdCV0cyg+KDk8V0xqT2lPblIxRVJSS2xfRD5QWlAvTU4lNW8nOkRgPmNxcVlsKkhlNDpvcDVTZW02YHMmQXMnMTAxIihnS0BqNE9yWikiYUJMYEszazZkKyNtQFxsVU41MjNLVnRSQzwlQV1ZPC1xW2BXcFdVKT0yKUQidW1bRGh0QVNdPylGRl9eLjtLSUJiXyJ1TEtsViNLS2xfVmsnMVwpMCcqSjdRY2whWThabU9rLSsjcWM+YlVbPy5YSEFLZExkbEVfMEdRRXQoYy5YJC9XUEJXcjRaUFljbFZxTWRsLCVBNm5jdVBNM25gOURTcyhNNEZJdHBHMmtvOTI0KUFsKy9laCxkNjdnVTtCY15qTkw3XF4tM2AnT182Rj06STROIWpwNi5MJ1A/SjtTZmRvO04uR2oyNC1xaEhBNihmRWlwRnRVXUFfPEcrUEwjYCgjXDpzcD5RSDtlamIsWF44P0M+JF0taVNBZTVCNm4mailvRXIqMW9bW2ExWzNWXThtL1w3dTlNUFtATEpVMTNtVEUoJGYnPChYVl0iVDREJmNMMiZxNypUZ2hEaEM7RWZnPEJORmp1TUokRF1SZEgnMGtcXicyZFdaKTZMWUtpK1ZfY1khS1lLWGRQVGlvUDxtJiE9czI9JWBhY0FwOTFMME4kJSFGNG1JJGYkTVcsRk1kW1YuSTc7UUU/VkVwX2gqMmMtaWQsPlNYRm9KPkM3Qk8/TywwPls9Z0hzPidjQUt0PVlKRTxWOSZiU2smUTJYU2hqTjgzV2ZEODpeJjEpOGcpL1QyJEtrM0BkVmUxWydSaSdxclhNWWZQR0FsUWxGJyNjNiFMNmBDSD1balMoWV1ac0EmQlJPXnU+aWBnPCpsQ0xaXTdrbyY2aWFiOitCMzQ3Zj1BLSdKSj9aVEFCaTxjLGklVixmT1hgYVtrPWk3LktgdFFUJ2ZQQVo9RCwkS2chLVdaPEQ5Zi1PYlBwM19pRVVjNXMkcE1MJzREQUpeWTA8Rms0JSVqamNnbz9qL3NpPjtuJFwjSmdVMT91QmxiKWFwNSY0WEpgJ2ZTXl5UQ2MhNkxSbkVBbGxfOCsjOSIscSdZSkQzMFZbYnQvbiM4IXJqKjBZQ0VVMTxJQE5LTWtsMUxUZlFVLzFkXVNkJy5qYnVNLmlcRjh1Um4mRi5rTzhLW2syckclJTtbWUMuSC5iXVlELDdHV0wnRjosclpARGFbViZIIVgwOXFqXW9sI0ItMUNgTEkvcG0xOygrYj8hImUpKyE/TSZQUD9XQE1nL3RGbVU2W1E3aTo9IWNRVU9AKD5jbVhQMConKSxlNkA0RF44dUtYZDNINk1iTXFtMyEuM3JVbUJxRzgvc3RxLEZGQzZWSjshOUdwQFNTWlhJImpZJV08TUlnL2Q4V2EiPD4wNWtcaktnNWwyV05QWFFqVWpoRlwmKlZia0lDTCdrKXQ1OmVPUTReZy9yLjxaSGpfYF8oQkRwcGFCKzY3LyxNTGgzKVc0WnMjXVhjYC5yXysoVCRET2hzPzRnVV43Q1o1bS9NPlxDNTFzNzBgYFwpPjcqITkuWjc6Qn4+ZW5kc3RyZWFtCmVuZG9iagoxOCAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCAxMDgwCj4+CnN0cmVhbQpHYXUwQmJCRFZ1JkRjWSZBc0ssPDIyV2FeLz1WRUFnNjpTV1tDWFA5KDFFJVMrImVYMG9fMDVSLFhnP3FHR15CRyZmQWo6XWxRMTYiLFwwOUllUC8oZ0UkMzhjJSdmZGgjaWovX1g4WHJmUFVXRCY0VydeKF9FXiwnYEw+VT10NDFxUmdLck5WTVIlWUo/ayZPWFYwUCkpQC0jPzJvSlUwVyEmaVNpQmRSLUsqUFghX0pxN25STy0mbSRxSyE8KEdoUXVhcF0sWSUvdEdzQ2k+QUtGWj82WT5jMi4+U0RfXkdZP1s4TC1cL0JfZC9ecXNtTWdIZiRkW1JCXVovVzloIU1LQmVpZTJaXVE0TyRiJnNyRV4lUS8vKitpYHMjVVpwRyhuYk8qLz1FLl1hZD5nNzE5TTwscy51VTg3ZCg4ZjpWZkdqQkAkZi9BZWA3SzZqOyghOXFDcyhRYmhKYWhAay1oLFlVNC5WVENDPFIyNy5QT1ZDYE0/SUZILjNBXllkYEkvTSMubVlqdE01J0xJXCFBaEhKXzc1WiE9YlpfOSpwSilVZGxsRFAjTCVKbjlJTEdCW0BIU01PSy0zci5IYzFabWZyWCxqXmtHJStXZFRpI15JJyhiLl5RJUVsMmRAUDkrZTtyPjEjQ2s0ZzpVQyFEYDQ+SGdpKSRAI1cwYSgxQSI/XiY9bideOT9Jcm5oIzM2OC8lWHJJL148UDwva2xeUE9KOVNNMCpZRkkhMlolU2xGNCpZbDMiJ0g9VD84ZVlpWXVuTiYsXVxtYltycVdMKzRAI0ddYTBUSiovOkVcbzxyXDssLTxXMUJqQChkLyxUM21uKEpPYDcyaWY3M3Q/SzFya1dfL2U1XydqQFwkJmAuJ19jIyJoRFk1XTxvRVJGZSlTIyRkIUNCYWRdbStkUTpEUVtaZyhBTUBBby0jQyQ/IUguVFIjODBhQmpYSy9vcC9ZTU1uWU1BZ2FPYWw/YWdNM3FpcWk7M1tdJ2ouSC87TkBiXmIkJjcoPzNCcDZfKCRzRT5qVltpZlpJUkNqNz8qWk01IS9LYlU2L0lXaTpFLWJoYlVLaUN1TFBpbm9nZmcrSUIocVYrPiowR1A6aW0rSFZeLkdnTiNrTWsjP3JZQCRYXyM8Ny8tKyhUPktPTj5KVGlOXGAxWmJCU3BPTisoJV0kMFJVYkA0SzosK04sZTE3ViVeSTRKcTxXOjA7KGNJODRtKm9PNjMzXzdOdC0+WWwkZT4jO2s+Z2NbMSlRaz5zIVw1RVhxQWFcJy1XVjNGR2ImLTlhYS9TNExXPkx0aCNkNSxBLlYwPXEpPnIsSkZSbE8oVy9sak9LbVE3JUorLVNvJ0VZbGl1U3Isb3I3PWRKVGAzaEBOMjtcZVsuWi90MUpMXzkwUiw9Nm86NTlPMl8oUUUuR2pzUGUmOzFcfj5lbmRzdHJlYW0KZW5kb2JqCnhyZWYKMCAxOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwNjEgMDAwMDAgbiAKMDAwMDAwMDE0MiAwMDAwMCBuIAowMDAwMDAwMjQ5IDAwMDAwIG4gCjAwMDAwMDAzNjEgMDAwMDAgbiAKMDAwMDAwMDQ0NCAwMDAwMCBuIAowMDAwMDAwNTYzIDAwMDAwIG4gCjAwMDAwMDA3NjggMDAwMDAgbiAKMDAwMDAwMDg4MyAwMDAwMCBuIAowMDAwMDAxMDg4IDAwMDAwIG4gCjAwMDAwMDExNjUgMDAwMDAgbiAKMDAwMDAwMTM3MSAwMDAwMCBuIAowMDAwMDAxNTc3IDAwMDAwIG4gCjAwMDAwMDE2NDcgMDAwMDAgbiAKMDAwMDAwMTkzOSAwMDAwMCBuIAowMDAwMDAyMDE5IDAwMDAwIG4gCjAwMDAwMDU3MTggMDAwMDAgbiAKMDAwMDAwOTQwNCAwMDAwMCBuIAowMDAwMDEzMzQwIDAwMDAwIG4gCnRyYWlsZXIKPDwKL0lEIApbPGEyNzU3OGY0MjgzODYxNTM2NGMwNDhhMjVjMGM5ZTI4PjxhMjc1NzhmNDI4Mzg2MTUzNjRjMDQ4YTI1YzBjOWUyOD5dCiUgUmVwb3J0TGFiIGdlbmVyYXRlZCBQREYgZG9jdW1lbnQgLS0gZGlnZXN0IChvcGVuc291cmNlKQoKL0luZm8gMTMgMCBSCi9Sb290IDEyIDAgUgovU2l6ZSAxOQo+PgpzdGFydHhyZWYKMTQ1MTIKJSVFT0YK";
+function downloadPDF(){
+  var bc=atob(_pdfData),arr=new Uint8Array(bc.length);
+  for(var i=0;i<bc.length;i++) arr[i]=bc.charCodeAt(i);
+  var blob=new Blob([arr],{type:'application/pdf'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='Shanghai_Itinerary_2027_DChan.pdf';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelector('.day-hdr').click();
+});
+</script>
+</body>
