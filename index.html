@@ -1169,9 +1169,9 @@ let _isNight = localStorage.getItem("sh_night")==="1";
 
 /* ══ THEME TOGGLE ══ */
 const TILE_DAY   = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-const TILE_NIGHT = "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png";
+const TILE_NIGHT = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 const ATTR_DAY   = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-const ATTR_NIGHT = '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; OpenStreetMap';
+const ATTR_NIGHT = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
 
 /* Map objects registry */
 const _maps = {};
