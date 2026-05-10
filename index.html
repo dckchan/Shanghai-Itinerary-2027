@@ -8,23 +8,24 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
   :root {
-  /* brand */
+  /* brand colours */
   --ink:#1a1410; --red:#c0392b; --gold:#c9943a; --gold-light:#e8c97a;
   --jade:#3a7d6b; --sky:#4a7fa5;
-  --day1:#c0392b;--day2:#c9943a;--day3:#2980b9;
-  --day4:#27ae60;--day5:#8e44ad;--day6:#e67e22;--day7:#16a085;
-  /* day-mode surfaces */
+  --day1:#c0392b; --day2:#c9943a; --day3:#2980b9;
+  --day4:#27ae60; --day5:#8e44ad; --day6:#e67e22; --day7:#16a085;
+  /* surfaces */
   --bg:#faf6ef; --surface:#ffffff; --surface-alt:#fdfcfa; --surface-sub:#f0e9d8;
   --border:#e8e0d4; --border-subtle:rgba(0,0,0,.06);
-  /* day-mode text */
-  --tx-primary:#111111;   /* main body text — near black */
-  --tx-secondary:#444444; /* secondary body text */
-  --tx-muted:#666666;     /* captions, helper text */
-  --tx-faint:#666666;     /* very subtle — addresses, GPS */
-  --tx-on-dark:#ffffff;   /* text on dark/coloured backgrounds */
-  --tx-on-gold:#1a1410;   /* text on gold backgrounds */
-  /* legacy aliases (keep for components that haven't migrated) */
-  --cream:#faf6ef; --parchment:#f0e9d8; --light-grey:#e8e0d4; --warm-grey:#8a7f72;
+  /* text — all dark for clear day-mode contrast, no light grays */
+  --tx-primary:#111111;    /* main body text */
+  --tx-body:#222222;       /* general body text */
+  --tx-sub:#333333;        /* sub-text, secondary labels */
+  --tx-meta:#444444;       /* metadata, addresses, captions */
+  --tx-on-dark:#ffffff;    /* text on dark/coloured backgrounds */
+  --tx-on-gold:#1a1410;    /* text on gold */
+  /* legacy aliases kept for components */
+  --cream:#faf6ef; --parchment:#f0e9d8; --light-grey:#e8e0d4;
+  --warm-grey:#444444;     /* was gray — now dark for readability */
 }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'DM Sans','Noto Sans TC',sans-serif;background:var(--cream);color:var(--tx-primary);line-height:1.7;}
@@ -35,7 +36,7 @@
   .hero h1{position:relative;font-family:'Playfair Display',serif;font-size:clamp(38px,7vw,72px);color:var(--cream);line-height:1.05;}
   .hero h1 em{font-style:italic;color:var(--gold-light);}
   .hero-cn{position:relative;font-family:'Noto Serif SC',serif;font-size:clamp(18px,3vw,26px);color:var(--gold);margin-top:8px;letter-spacing:6px;}
-  .hero-sub{position:relative;color:var(--warm-grey);font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-top:16px;margin-bottom:28px;}
+  .hero-sub{position:relative;color:var(--tx-meta);font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-top:16px;margin-bottom:28px;}
   .hero-badges{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
   .badge{background:rgba(255,255,255,.07);border:1px solid rgba(201,148,58,.35);color:var(--gold-light);font-size:12px;padding:5px 14px;border-radius:40px;}
 
@@ -46,7 +47,7 @@
   .dot{color:rgba(255,255,255,.3);font-size:16px;}
 
   .weather-bar{background:var(--parchment);border-bottom:1px solid var(--light-grey);padding:16px 40px;display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
-  .wtag{font-size:12px;color:var(--warm-grey);display:flex;align-items:center;gap:6px;}
+  .wtag{font-size:12px;color:var(--tx-meta);display:flex;align-items:center;gap:6px;}
 
   .container{max-width:1040px;margin:0 auto;padding:0 24px;}
   .section{padding:52px 0 36px;}
@@ -62,7 +63,7 @@
   .place-table td{padding:10px 16px;background:var(--surface);}
   .place-table td.en{font-weight:500;}
   .place-table td.cn{font-family:'Noto Serif SC',serif;color:var(--red);font-size:14px;}
-  .place-table td.pinyin{color:var(--warm-grey);font-style:italic;font-size:12px;}
+  .place-table td.pinyin{color:var(--tx-meta);font-style:italic;font-size:12px;}
   .type-pill{display:inline-block;font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:40px;text-transform:uppercase;}
   .tp-sight{background:#e3f2fd;color:#0d47a1;}
   .tp-food{background:#fce4ec;color:#880e4f;}
@@ -78,10 +79,10 @@
   .day-hdr:hover{background:var(--parchment);}
   .day-num-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 0;border-right:3px solid;}
   .day-num-col .n{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;line-height:1;}
-  .day-num-col .lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warm-grey);}
+  .day-num-col .lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--tx-meta);}
   .day-info{padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
   .day-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px;}
-  .day-title-cn{font-family:'Noto Serif SC',serif;font-size:12px;color:var(--warm-grey);}
+  .day-title-cn{font-family:'Noto Serif SC',serif;font-size:12px;color:var(--tx-meta);}
   .day-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
   .dtag{font-size:10px;letter-spacing:.5px;padding:2px 9px;border-radius:40px;text-transform:uppercase;}
   .t-walk{background:#e8f5e9;color:#2e7d32;}
@@ -92,7 +93,7 @@
   .t-art{background:#e0f2f1;color:#004d40;}
   .t-fun{background:#fff8e1;color:#f57f17;}
   .t-relax{background:#efebe9;color:#3e2723;}
-  .chevron{font-size:18px;color:var(--warm-grey);transition:transform .3s;flex-shrink:0;}
+  .chevron{font-size:18px;color:var(--tx-meta);transition:transform .3s;flex-shrink:0;}
 
   .day-body{display:none;border-top:1px solid var(--light-grey);}
   .day-body.open{display:block;}
@@ -106,7 +107,7 @@
   .leg-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:4px;line-height:1.4;}
   .leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
   .leg-txt{color:var(--tx-primary);}
-  .leg-cn{color:var(--warm-grey);font-family:'Noto Sans TC',sans-serif;font-size:10px;}
+  .leg-cn{color:var(--tx-meta);font-family:'Noto Sans TC',sans-serif;font-size:10px;}
 
   /* SCHEDULE */
   .schedule{padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;background:var(--surface-alt);}
@@ -117,7 +118,7 @@
   .block.evening{border-color:#2c3e50;}
   .blk-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:8px;font-weight:500;}
   .blk-title{font-family:'Playfair Display',serif;font-size:14px;margin-bottom:6px;}
-  .blk-list{list-style:none;font-size:12.5px;color:var(--tx-secondary);line-height:1.85;}
+  .blk-list{list-style:none;font-size:12.5px;color:var(--tx-sub);line-height:1.85;}
   .blk-list li::before{content:'·';margin-right:6px;color:var(--gold);font-size:15px;}
   .blk-list .cn-name{font-family:'Noto Serif SC',serif;color:var(--red);font-size:12px;}
 
@@ -142,13 +143,13 @@
   .tip-card{background:var(--surface);border:1px solid var(--light-grey);padding:16px;font-size:12.5px;line-height:1.6;}
   .tip-icon{font-size:20px;margin-bottom:6px;}
   .tip-title{font-weight:600;margin-bottom:3px;color:var(--tx-primary);}
-  .tip-card p{color:var(--tx-muted);}
+  .tip-card p{color:var(--tx-meta);}
 
-  footer{background:var(--ink);color:var(--warm-grey);text-align:center;padding:32px 24px;font-size:12px;}
+  footer{background:var(--ink);color:var(--tx-meta);text-align:center;padding:32px 24px;font-size:12px;}
   footer .ftitle{font-family:'Playfair Display',serif;color:var(--gold-light);font-size:18px;margin-bottom:6px;}
 
   .tab-bar{display:flex;border-bottom:1px solid var(--light-grey);background:var(--surface);}
-  .tab-btn{flex:1;padding:11px 14px;font-size:12px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--warm-grey);border-bottom:2px solid transparent;transition:all .18s;}
+  .tab-btn{flex:1;padding:11px 14px;font-size:12px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:none;background:none;color:var(--tx-meta);border-bottom:2px solid transparent;transition:all .18s;}
   .tab-btn.active{color:var(--tx-primary);border-bottom-color:var(--red);}
   .tab-panel{display:none;}
   .tab-panel.active{display:block;}
@@ -172,7 +173,7 @@
   .btn-undo{background:var(--ink);color:var(--gold-light);border:none;padding:6px 14px;font-size:11px;letter-spacing:1px;cursor:pointer;border-radius:2px;}
   .btn-undo:hover{background:#333;}
   .cat-block{margin-bottom:20px;}
-  .cat-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:var(--warm-grey);padding:8px 0 10px;border-bottom:1px solid var(--light-grey);margin-bottom:10px;}
+  .cat-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:var(--tx-meta);padding:8px 0 10px;border-bottom:1px solid var(--light-grey);margin-bottom:10px;}
   .picks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:10px;}
   .pick-card{background:var(--surface);border:1px solid var(--light-grey);padding:12px;font-size:12px;transition:border-color .15s;position:relative;}
   .pick-card:hover{border-color:var(--gold);}
@@ -180,8 +181,8 @@
   .pick-stars{font-size:11px;color:var(--gold);margin-bottom:4px;letter-spacing:1px;}
   .pick-name{font-weight:600;font-size:12.5px;color:var(--tx-primary);margin-bottom:2px;}
   .pick-cn{font-family:'Noto Serif SC',serif;font-size:11px;color:var(--red);margin-bottom:4px;}
-  .pick-note{font-size:11px;color:var(--warm-grey);line-height:1.5;margin-bottom:5px;}
-  .pick-addr{font-size:10px;color:var(--tx-faint);margin-bottom:7px;}
+  .pick-note{font-size:11px;color:var(--tx-meta);line-height:1.5;margin-bottom:5px;}
+  .pick-addr{font-size:10px;color:var(--tx-meta);margin-bottom:7px;}
   .pick-btns{display:flex;gap:6px;}
   .btn-add{background:var(--red);color:white;border:none;padding:4px 10px;font-size:10px;cursor:pointer;border-radius:2px;letter-spacing:.5px;}
   .btn-add:hover{background:#a93226;}
@@ -234,7 +235,7 @@
 </header>
 
 <div style="background:var(--ink);text-align:center;padding:7px 20px;border-top:1px solid rgba(201,148,58,0.25);">
-  <span style="font-family:'Noto Serif SC',serif;color:var(--gold);font-size:12px;letter-spacing:3px;">Produced by D. Chan &nbsp;·&nbsp; 2026</span>  &nbsp;&nbsp;<button id="theme-toggle" onclick="toggleTheme()" style="background:rgba(201,148,58,.2);border:1px solid rgba(201,148,58,.5);color:var(--gold-light);font-size:12px;padding:4px 14px;border-radius:40px;cursor:pointer;letter-spacing:1px;transition:all .2s" title="Toggle day/night mode">🌙 Night Mode</button>
+  <span style="font-family:'Noto Serif SC',serif;color:var(--gold);font-size:12px;letter-spacing:3px;">Produced by D. Chan &nbsp;·&nbsp; 2026</span>
   &nbsp;&nbsp;
   <a id="pdf-dl-btn" href="#" onclick="downloadPDF()" style="font-size:11px;color:var(--gold-light);background:rgba(201,148,58,0.15);border:1px solid rgba(201,148,58,0.4);padding:3px 14px;border-radius:40px;text-decoration:none;letter-spacing:1px;cursor:pointer;">⬇ Download PDF Summary</a>
 </div>
@@ -264,7 +265,7 @@
       <h2>Place Reference <span class="cn">地點名稱對照</span></h2>
       <div class="sec-line"></div>
     </div>
-    <p style="font-size:13px;color:var(--warm-grey);margin-bottom:18px;">Traditional Chinese names for all attractions, restaurants &amp; hotels — show this to taxi drivers or use in DiDi app.</p>
+    <p style="font-size:13px;color:var(--tx-meta);margin-bottom:18px;">Traditional Chinese names for all attractions, restaurants &amp; hotels — show this to taxi drivers or use in DiDi app.</p>
     <table class="place-table">
       <thead><tr><th>English Name</th><th>繁體中文</th><th>拼音 Pinyin</th><th>Type</th></tr></thead>
       <tbody>
@@ -288,17 +289,17 @@
         <tr><td class="en">Huangpu River</td><td class="cn">黃浦江</td><td class="pinyin">Huángpǔ Jiāng</td><td><span class="type-pill tp-sight">Waterway</span></td></tr>
         <tr><td class="en">Pudong District</td><td class="cn">浦東新區</td><td class="pinyin">Pǔdōng Xīnqū</td><td><span class="type-pill tp-sight">District</span></td></tr>
         <tr><td class="en">Jing'an District</td><td class="cn">靜安區</td><td class="pinyin">Jìng'ān Qū</td><td><span class="type-pill tp-sight">District</span></td></tr>
-        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--warm-grey);font-weight:500;">🍽️ Restaurants 餐廳</td></tr>
+        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--tx-meta);font-weight:500;">🍽️ Restaurants 餐廳</td></tr>
         <tr><td class="en">Din Tai Fung</td><td class="cn">鼎泰豐</td><td class="pinyin">Dǐng Tài Fēng</td><td><span class="type-pill tp-food">Taiwanese</span></td></tr>
         <tr><td class="en">Lost Heaven</td><td class="cn">花馬天堂</td><td class="pinyin">Huā Mǎ Tiāntáng</td><td><span class="type-pill tp-food">Yunnan</span></td></tr>
         <tr><td class="en">Crystal Jade</td><td class="cn">翡翠酒家</td><td class="pinyin">Fěicuì Jiǔjiā</td><td><span class="type-pill tp-food">Cantonese</span></td></tr>
         <tr><td class="en">Da Dong Roast Duck</td><td class="cn">大董烤鴨店</td><td class="pinyin">Dà Dǒng Kǎoyā Diàn</td><td><span class="type-pill tp-food">Beijing</span></td></tr>
         <tr><td class="en">Fu He Hui</td><td class="cn">福和慧</td><td class="pinyin">Fú Hé Huì</td><td><span class="type-pill tp-food">Vegetarian</span></td></tr>
-        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--warm-grey);font-weight:500;">🏨 Hotels 酒店</td></tr>
+        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--tx-meta);font-weight:500;">🏨 Hotels 酒店</td></tr>
         <tr><td class="en">The Peninsula Shanghai</td><td class="cn">上海半島酒店</td><td class="pinyin">Shànghǎi Bàndǎo Jiǔdiàn</td><td><span class="type-pill tp-hotel">Luxury</span></td></tr>
         <tr><td class="en">Fairmont Peace Hotel</td><td class="cn">和平飯店</td><td class="pinyin">Hépíng Fàndiàn</td><td><span class="type-pill tp-hotel">Luxury</span></td></tr>
         <tr><td class="en">Central Hotel Shanghai</td><td class="cn">上海中心大酒店</td><td class="pinyin">Shànghǎi Zhōngxīn Dà Jiǔdiàn</td><td><span class="type-pill tp-hotel">Mid-Range</span></td></tr>
-        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--warm-grey);font-weight:500;">🍜 Key Dishes 特色菜餚</td></tr>
+        <tr><td colspan="4" style="padding:8px 16px;background:var(--parchment);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--tx-meta);font-weight:500;">🍜 Key Dishes 特色菜餚</td></tr>
         <tr><td class="en">Xiaolongbao (Soup Dumplings)</td><td class="cn">小籠包</td><td class="pinyin">Xiǎolóng Bāo</td><td><span class="type-pill tp-food">Must Try</span></td></tr>
         <tr><td class="en">Shengjianbao (Pan-fried Dumplings)</td><td class="cn">生煎包</td><td class="pinyin">Shēngjiān Bāo</td><td><span class="type-pill tp-food">Must Try</span></td></tr>
         <tr><td class="en">Red-braised Pork</td><td class="cn">紅燒肉</td><td class="pinyin">Hóngshāo Ròu</td><td><span class="type-pill tp-food">Classic</span></td></tr>
@@ -315,7 +316,7 @@
       <h2>7-Day Itinerary <span class="cn">七日行程</span></h2>
       <div class="sec-line"></div>
     </div>
-    <p style="font-size:13px;color:var(--warm-grey);margin-bottom:22px;">Click any day to expand the route map and full schedule ↓</p>
+    <p style="font-size:13px;color:var(--tx-meta);margin-bottom:22px;">Click any day to expand the route map and full schedule ↓</p>
 
     <div class="days-wrap">
 
@@ -822,7 +823,7 @@
       <h2>Estimated Budget <span class="cn">預算估算</span></h2>
       <div class="sec-line"></div>
     </div>
-    <p style="font-size:13px;color:var(--warm-grey);margin-bottom:16px;">7 Days · Family of 6 · 六人家庭 · Prices in CAD 加元</p>
+    <p style="font-size:13px;color:var(--tx-meta);margin-bottom:16px;">7 Days · Family of 6 · 六人家庭 · Prices in CAD 加元</p>
     <table class="budget-table">
       <thead><tr><th>Category 項目</th><th style="text-align:right">Estimated Cost (CAD)</th></tr></thead>
       <tbody>
@@ -881,8 +882,8 @@
 .pcard-stars{font-size:10px;color:var(--gold);margin-bottom:4px;letter-spacing:1px;}
 .pcard-name{font-weight:700;font-size:12.5px;color:var(--ink);margin-bottom:2px;line-height:1.3;}
 .pcard-cn{font-family:'Noto Serif SC',serif;font-size:11px;color:var(--red);margin-bottom:5px;}
-.pcard-note{font-size:11px;color:var(--warm-grey);line-height:1.5;margin-bottom:5px;}
-.pcard-addr{font-size:10px;color:#bbb;margin-bottom:8px;}
+.pcard-note{font-size:11px;color:var(--tx-meta);line-height:1.5;margin-bottom:5px;}
+.pcard-addr{font-size:10px;color:var(--tx-meta);margin-bottom:8px;}
 .pcard-btns{display:flex;gap:5px;flex-wrap:wrap;}
 .btn-add-pick{background:var(--red);color:white;border:none;padding:4px 10px;font-size:10px;cursor:pointer;border-radius:2px;letter-spacing:.3px;transition:background .12s;}
 .btn-add-pick:hover{background:#a93226;}
@@ -933,82 +934,7 @@
   --bg:#faf6ef; --card-bg:#ffffff; --text:#1a1410;
   --border:#e8e0d4; --subtle:#fdfcfa;
 }
-body.night {
-  /* night surfaces */
-  --bg:#0f0d0b; --surface:#1c1814; --surface-alt:#171411; --surface-sub:#211d19;
-  --border:#2d2720; --border-subtle:rgba(255,255,255,.06);
-  /* night text — clear white-on-dark contrast */
-  --tx-primary:#f0ebe4;   /* main text: warm white, highly readable */
-  --tx-secondary:#c8bfb4; /* secondary: softer white */
-  --tx-muted:#8a8078;     /* muted: mid grey — captions */
-  --tx-faint:#5a524a;     /* faint: dark grey — GPS coords, very subtle */
-  --tx-on-dark:#f0ebe4;   /* same as primary — text on dark cards */
-  --tx-on-gold:#1a1410;   /* keep dark on gold */
-  /* override legacy aliases */
-  --cream:#0f0d0b; --parchment:#1c1814; --light-grey:#2d2720; --warm-grey:#8a8078;
-  --ink:#f0ebe4;
-  background:var(--bg);
-  color:var(--tx-primary);
-}
-/* ── Night: surfaces ── */
-body.night .day-card,body.night .pcard,body.night .my-pick-row,
-body.night .block,body.night .accom-badge,body.night .tip-card,
-body.night .stay-card,body.night .budget-table td,
-body.night .place-table td { background:var(--surface) !important; border-color:var(--border) !important; }
-body.night .schedule,body.night .picks-wrap,
-body.night .my-picks-block,body.night .surface-alt { background:var(--surface-alt) !important; }
-body.night .sec-hdr,body.night .section,body.night main,
-body.night .container,body.night .weather-bar,
-body.night .area-pills,body.night .stay-grid { background:var(--bg) !important; }
-body.night .weather-bar { border-color:var(--border) !important; }
-/* ── Night: map sidebar ── */
-body.night .map-sidebar { background:#181410 !important; border-color:var(--border) !important; }
-body.night .leg-title { background:#181410 !important; color:var(--tx-primary) !important; }
-body.night .leg-user-title { background:rgba(58,125,107,.15) !important; }
-/* ── Night: text — primary ── */
-body.night .day-title,body.night .sec-hdr h2,body.night .day-num-col .n,
-body.night .blk-title,body.night .pcard-name,body.night .my-pick-name,
-body.night .tip-title,body.night .picks-heading,body.night .stay-card h3,
-body.night .budget-table td:first-child,body.night .area-pill,
-body.night .leg-txt,body.night .leg-user-text .lu-name,
-body.night .sched-hdr,body.night .day-info { color:var(--tx-primary) !important; }
-/* ── Night: text — secondary ── */
-body.night .blk-list,body.night .blk-list li,body.night .pcard-note,
-body.night .tip-card p,body.night .day-title-cn,body.night .stay-card p,
-body.night .wtag,body.night .budget-table td,
-body.night .place-table td.en,body.night .place-table td.pinyin,
-body.night .accom-nm,body.night .accom-ad,body.night .my-pick-row span,
-body.night .dtag,body.night .stay-tier { color:var(--tx-secondary) !important; }
-/* ── Night: text — muted ── */
-body.night .pcard-addr,body.night .sched-pick-addr,
-body.night .blk-label,body.night .leg-user-text .lu-addr,
-body.night .day-num-col .lbl,body.night .hero-sub,
-body.night .accom-note-txt { color:var(--tx-muted) !important; }
-/* ── Night: text — faint (GPS, very subtle) ── */
-body.night .pcard-gps,body.night .sched-pick-gps { color:var(--tx-faint) !important; }
-/* ── Night: tab bar ── */
-body.night .tab-bar { background:var(--surface) !important; border-color:var(--border) !important; }
-body.night .tab-btn { color:var(--tx-muted) !important; }
-body.night .tab-btn.active { color:var(--tx-primary) !important; border-bottom-color:var(--red) !important; }
-/* ── Night: day header ── */
-body.night .day-hdr:hover { background:var(--surface) !important; }
-body.night .day-hdr { border-bottom-color:var(--border) !important; }
-body.night .chevron { color:var(--tx-muted) !important; }
-/* ── Night: place/budget table headers stay dark ── */
-body.night .place-table thead th,body.night .budget-table th { background:#0f0d0b !important; }
-body.night .place-table tbody tr:nth-child(even) td,
-body.night .budget-table .total td { background:var(--surface-sub) !important; }
-/* ── Night: misc ── */
-body.night .badge { background:rgba(255,255,255,.05) !important; }
-body.night .hero { background:#0a0806 !important; }
-body.night .hero h1 { color:#f0ebe4 !important; }
-body.night .picks-toolbar { background:var(--surface-alt) !important; border-color:var(--border) !important; }
-body.night .cat-section { border-color:var(--border) !important; }
-body.night .btn-replace-sel { background:var(--surface) !important; color:var(--tx-primary) !important; border-color:var(--border) !important; }
-body.night .section-line { background:linear-gradient(to right,var(--gold),transparent) !important; }
-body.night .sec-hdr .cn { color:var(--gold) !important; }
-body.night .food-box,body.night .sched-picks-section { background:#0a0806 !important; }
-body.night .senior-tip { background:#1c1814 !important; border-color:#3d3428 !important; color:#b8a890 !important; }
+
 
 /* ── CROSSHAIR PULSE ANIMATION ── */
 @keyframes pinPulse {
@@ -1019,8 +945,8 @@ body.night .senior-tip { background:#1c1814 !important; border-color:#3d3428 !im
 .pin-pulse { animation:pinPulse .5s ease-in-out 3; }
 
 /* ── MAP ROW ── */
-.map-row{display:flex;height:400px;overflow:hidden;background:#e8f0e0}
-.map-col{flex:1;min-width:0;position:relative}
+.map-row{display:flex;height:420px;overflow:hidden;background:#d8e8d0}
+.map-col{flex:1;min-width:0;position:relative;min-height:360px}
 .leaflet-map{width:100%;height:100%}
 .map-sidebar{width:240px;flex-shrink:0;background:white;border-left:1px solid var(--light-grey);overflow-y:auto;font-size:11px;display:flex;flex-direction:column}
 .map-sidebar::-webkit-scrollbar{width:4px}
@@ -1029,7 +955,7 @@ body.night .senior-tip { background:#1c1814 !important; border-color:#3d3428 !im
 .leg-item{display:flex;align-items:flex-start;gap:7px;padding:6px 12px;border-bottom:1px solid rgba(0,0,0,.04)}
 .leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
 .leg-txt{color:var(--ink);font-size:11px;font-weight:500}
-.leg-cn{color:var(--warm-grey);font-size:10px;font-family:"Noto Sans TC",sans-serif}
+.leg-cn{color:var(--tx-meta);font-size:10px;font-family:"Noto Sans TC",sans-serif}
 /* user picks sidebar */
 .leg-user-section{border-top:2px solid var(--jade);margin-top:4px}
 .leg-user-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--jade);font-weight:700;padding:7px 12px 5px;background:rgba(58,125,107,.06);position:sticky;top:28px;z-index:1}
@@ -1038,7 +964,7 @@ body.night .senior-tip { background:#1c1814 !important; border-color:#3d3428 !im
 .leg-user-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0;margin-top:3px;border:1.5px solid rgba(0,0,0,.15)}
 .leg-user-text .lu-name{font-weight:600;color:var(--ink);font-size:11px}
 .leg-user-text .lu-cn{color:var(--red);font-family:"Noto Serif SC",serif;font-size:10px;margin-left:3px}
-.leg-user-text .lu-addr{font-size:9px;color:#aaa;display:block;margin-top:1px}
+.leg-user-text .lu-addr{font-size:9px;color:var(--tx-meta);display:block;margin-top:1px}
 
 /* ── ACCOMMODATION INLINE ── */
 .accom-inline{display:flex;align-items:center;gap:6px;margin-top:5px;flex-wrap:wrap}
@@ -1048,8 +974,8 @@ body.night .senior-tip { background:#1c1814 !important; border-color:#3d3428 !im
 .accom-nm{font-weight:700;color:var(--ink);font-size:11.5px}
 .accom-cnm{font-family:"Noto Serif SC",serif;color:var(--red);font-size:11px;margin-left:2px}
 .accom-st{font-size:10px;color:var(--gold)}
-.accom-ad{font-size:10px;color:var(--warm-grey);margin-left:2px}
-.accom-note-txt{font-size:10px;color:var(--warm-grey);font-style:italic;width:100%;margin-top:2px}
+.accom-ad{font-size:10px;color:var(--tx-meta);margin-left:2px}
+.accom-note-txt{font-size:10px;color:var(--tx-meta);font-style:italic;width:100%;margin-top:2px}
 
 /* ── SCHEDULE ── */
 .schedule{padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;background:#fdfcfa}
@@ -1057,7 +983,7 @@ body.night .senior-tip { background:#1c1814 !important; border-color:#3d3428 !im
 .block.morning{border-color:#f39c12}.block.lunch{border-color:var(--jade)}.block.afternoon{border-color:var(--red)}.block.evening{border-color:#2c3e50}
 .blk-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.6;margin-bottom:8px;font-weight:500}
 .blk-title{font-family:"Playfair Display",serif;font-size:14px;margin-bottom:6px}
-.blk-list{list-style:none;font-size:12.5px;color:#555;line-height:1.85}
+.blk-list{list-style:none;font-size:12.5px;color:var(--tx-body);line-height:1.85}
 .blk-list li::before{content:"·";margin-right:6px;color:var(--gold);font-size:15px}
 .cn-name{font-family:"Noto Serif SC",serif;color:var(--red);font-size:12px}
 .loc-link{background:none;border:none;cursor:pointer;font-size:12px;padding:0 2px;vertical-align:middle;opacity:.65;transition:opacity .12s;line-height:1;display:inline}
@@ -1080,9 +1006,9 @@ body.night .senior-tip { background:#1c1814 !important; border-color:#3d3428 !im
 .pcard-stars{font-size:10px;color:var(--gold);margin-bottom:3px}
 .pcard-name{font-weight:700;font-size:12.5px;color:var(--ink);margin-bottom:2px;line-height:1.3}
 .pcard-cn{font-family:"Noto Serif SC",serif;font-size:11px;color:var(--red);margin-bottom:4px}
-.pcard-note{font-size:11px;color:var(--warm-grey);line-height:1.45;margin-bottom:5px}
-.pcard-addr{font-size:10px;color:#bbb;margin-bottom:5px}
-.pcard-gps{font-size:9.5px;color:#ccc;font-family:monospace;margin-bottom:6px}
+.pcard-note{font-size:11px;color:var(--tx-meta);line-height:1.45;margin-bottom:5px}
+.pcard-addr{font-size:10px;color:var(--tx-meta);margin-bottom:5px}
+.pcard-gps{font-size:9.5px;color:var(--tx-meta);font-family:monospace;margin-bottom:6px}
 .pcard-btns{display:flex;gap:5px;flex-wrap:wrap}
 .btn-add-pick{background:var(--red);color:white;border:none;padding:4px 10px;font-size:10px;cursor:pointer;border-radius:2px}
 .btn-add-pick:hover{background:#a93226}
@@ -1165,37 +1091,12 @@ let myList=JSON.parse(localStorage.getItem("sh_myList")||"{}");
 let undoStack=[];
 const _pickLayers={};
 let _activeSched=null;
-let _isNight = localStorage.getItem("sh_night")==="1";
 
 /* ══ THEME TOGGLE ══ */
 const TILE_DAY   = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-const TILE_NIGHT = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const ATTR_DAY   = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-const ATTR_NIGHT = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
+const ATTR_DAY   = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
 
 /* Map objects registry */
-const _maps = {};
-
-function applyTheme(night){
-  _isNight = night;
-  document.body.classList.toggle("night", night);
-  localStorage.setItem("sh_night", night?"1":"0");
-  const btn = document.getElementById("theme-toggle");
-  if(btn){ btn.textContent = night ? "☀️ Day Mode" : "🌙 Night Mode"; }
-  /* Switch tile layers on all initialised maps */
-  Object.entries(_maps).forEach(([id, map])=>{
-    map.eachLayer(layer=>{
-      if(layer._url && (layer._url.includes("openstreetmap") || layer._url.includes("stadiamaps"))){
-        map.removeLayer(layer);
-        L.tileLayer(night?TILE_NIGHT:TILE_DAY,{
-          attribution: night?ATTR_NIGHT:ATTR_DAY, maxZoom:19
-        }).addTo(map);
-      }
-    });
-  });
-}
-function toggleTheme(){ applyTheme(!_isNight); }
-
 /* ══ ROBUST FLY-TO ══ */
 /* Central navigator: opens day card → ensures map tab active → flies to coords → pulses */
 function goToLocation(day, lat, lng, name, cn, addr){
@@ -1263,7 +1164,7 @@ function goToLocation(day, lat, lng, name, cn, addr){
           .setContent(`<div style="font-family:sans-serif;min-width:160px">
             <b style="font-size:13px;color:#1a1410">${name}</b><br>
             <span style="font-family:'Noto Serif SC',serif;font-size:11px;color:#c0392b">${cn}</span><br>
-            <span style="font-size:10px;color:#888">📍 ${addr||""}</span><br>
+            <span style="font-size:10px;color:var(--tx-meta)">📍 ${addr||""}</span><br>
             <code style="font-size:9px;background:#1a1410;color:#e8c97a;padding:1px 5px;border-radius:2px;display:inline-block;margin-top:3px">
               🌐 ${lat.toFixed(6)}, ${lng.toFixed(6)}</code>
           </div>`)
@@ -1353,7 +1254,7 @@ function updateAccomHeader(day){
     <span class="accom-lbl">🏨 Staying</span>
     <span class="accom-nm">${a.name}</span><span class="accom-cnm">${a.cn}</span>
     <span class="accom-st">${stars}</span><span class="accom-ad">📍 ${a.addr}</span>
-    ${list.length>1?`<span style="font-size:10px;color:var(--warm-grey)">+${list.length-1} more</span>`:""}
+    ${list.length>1?`<span style="font-size:10px;color:var(--tx-meta)">+${list.length-1} more</span>`:""}
     ${a.note?`<span class="accom-note-txt">${a.note}</span>`:""}
   </div>`;
 }
@@ -1380,10 +1281,10 @@ function updateMapPins(day){
           <div><b style="font-size:12.5px;color:#1a1410">${item.name}</b><br>
           <span style="font-family:'Noto Serif SC',serif;font-size:11px;color:#c0392b">${item.cn}</span></div>
         </div>
-        <div style="font-size:10.5px;color:#888;margin-bottom:2px">📍 ${item.addr}</div>
+        <div style="font-size:10.5px;color:var(--tx-meta);margin-bottom:2px">📍 ${item.addr}</div>
         <code style="font-size:9.5px;background:#1a1410;color:#e8c97a;padding:2px 6px;border-radius:2px;display:inline-block;margin:3px 0">
           🌐 ${item.lat.toFixed(6)}, ${item.lng.toFixed(6)}</code>
-        <div style="font-size:10px;color:#666;margin-top:3px;font-style:italic">${item.note||""}</div>
+        <div style="font-size:10px;color:var(--tx-body);margin-top:3px;font-style:italic">${item.note||""}</div>
         <div style="display:flex;gap:5px;margin-top:7px">
           <a href="https://maps.google.com/?q=${item.lat},${item.lng}" target="_blank"
             style="font-size:10px;background:#c0392b;color:white;padding:4px 9px;border-radius:2px;text-decoration:none">📍 Maps</a>
@@ -1539,7 +1440,14 @@ function switchTab(btn,type){
   const idx=["map","sched","picks"].indexOf(type);
   if(panels[idx]) panels[idx].classList.add("active");
   if(type==="map"){
-    setTimeout(()=>{ const el=panels[0].querySelector(".leaflet-map"); if(el&&el._lmap) el._lmap.invalidateSize(true); },80);
+    /* Two invalidateSize calls: one quick, one after CSS transition */
+    const mapPanel=panels[0];
+    const tryInvalidate=()=>{
+      const el=mapPanel.querySelector(".leaflet-map");
+      if(el&&el._lmap){ el._lmap.invalidateSize(true); }
+    };
+    setTimeout(tryInvalidate, 60);
+    setTimeout(tryInvalidate, 250);
   }
   if(type==="picks"){
     const p=panels[idx]; if(p&&p.getAttribute("data-day")) renderPicksPanel(p.getAttribute("data-day"));
@@ -1549,11 +1457,8 @@ function switchTab(btn,type){
 /* ══ MAP ENGINE ══ */
 function makeMap(id,c,z){
   const el=document.getElementById(id); if(!el||el._lmap) return el?el._lmap:null;
-  const tileUrl  = _isNight ? TILE_NIGHT : TILE_DAY;
-  const tileAttr = _isNight ? ATTR_NIGHT : ATTR_DAY;
   const map=L.map(el,{scrollWheelZoom:false}).setView(c,z);
-  L.tileLayer(tileUrl,{attribution:tileAttr,maxZoom:19}).addTo(map);
-  _maps[id]=map;
+  L.tileLayer(TILE_DAY,{attribution:ATTR_DAY,maxZoom:19}).addTo(map);
   return el._lmap=map;
 }
 function routePinIcon(color,label){
@@ -1566,9 +1471,9 @@ function routeMarker(map,pin,color){
   L.marker([lat,lng],{icon:routePinIcon(color,n)}).addTo(map).bindPopup(
     `<div style="min-width:210px;font-family:sans-serif">
       <b style="font-size:13px;color:#1a1410">${n} ${cn}</b><br>
-      <span style="font-size:11px;color:#555">${en}</span><br>
-      <span style="font-size:10.5px;color:#888">📍 ${addr}</span><br>
-      <span style="font-size:10px;color:#aaa;font-family:'Noto Sans TC',sans-serif">${addr_cn||""}</span><br>
+      <span style="font-size:11px;color:var(--tx-body)">${en}</span><br>
+      <span style="font-size:10.5px;color:var(--tx-meta)">📍 ${addr}</span><br>
+      <span style="font-size:10px;color:var(--tx-meta);font-family:'Noto Sans TC',sans-serif">${addr_cn||""}</span><br>
       <code style="font-size:10px;background:#1a1410;color:#e8c97a;padding:2px 6px;border-radius:2px;display:inline-block;margin:4px 0">
         🌐 ${lat.toFixed(6)}, ${lng.toFixed(6)}</code><br>
       <button onclick="openPhotoModal(${lat},${lng},'${sn}','${cn}','${sa}','${addr_cn||""}')"
@@ -1664,8 +1569,6 @@ document.addEventListener("DOMContentLoaded",()=>{
     });
     if(changed){ persist(); console.log("Migrated stale myList coords"); }
   } catch(e){ console.warn("Migration error:",e); }
-  /* Restore theme */
-  if(_isNight) applyTheme(true);
   /* Restore picks UI */
   ["d1","d2","d3","d4","d5","d6","d7"].forEach(d=>{
     updateAccomHeader(d);
