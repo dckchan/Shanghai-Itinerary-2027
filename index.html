@@ -1273,7 +1273,7 @@ function updateMapPins(day){
     items.forEach(item=>{
       if(!item.lat||!item.lng) return;
       const mk=L.marker([item.lat,item.lng],{icon:pickPinIcon(meta.color,meta.icon)});
-      const sn=item.name.replace(/'/g,"\\'"), sa=item.addr.replace(/'/g,"\\'");
+      const sn=item.name.replace(/'/g,'&#39;'), sa=item.addr.replace(/'/g,'&#39;');
       mk.bindPopup(`<div style="min-width:195px;font-family:sans-serif">
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
           <span style="font-size:16px">${meta.icon}</span>
@@ -1307,7 +1307,7 @@ function updateMapLegend(day){
   all.forEach(({cat,item})=>{
     const meta=CAT_META[cat]||{icon:"📍",color:"#555"};
     const lat=item.lat||0, lng=item.lng||0;
-    const sn=item.name.replace(/'/g,"\\'"), sc=item.cn.replace(/'/g,"\\'"), sa=item.addr.replace(/'/g,"\\'");
+    const sn=item.name.replace(/'/g,'&#39;'), sc=item.cn.replace(/'/g,'&#39;'), sa=item.addr.replace(/'/g,'&#39;');
     s+=`<div class="leg-user-item" onclick="goToLocation('${day}',${lat},${lng},'${sn}','${sc}','${sa}')">
       <div class="leg-user-dot" style="background:${meta.color}"></div>
       <div class="leg-user-text">
@@ -1339,7 +1339,7 @@ function updateSchedule(day){
     arr.forEach((item,i)=>{
       const lat=item.lat||0, lng=item.lng||0;
       const iid=`spi-${day}-${cat}-${i}`;
-      const sn=item.name.replace(/'/g,"\\'"), sc=item.cn.replace(/'/g,"\\'"), sa=item.addr.replace(/'/g,"\\'");
+      const sn=item.name.replace(/'/g,'&#39;'), sc=item.cn.replace(/'/g,'&#39;'), sa=item.addr.replace(/'/g,'&#39;');
       s+=`<div class="sched-pick-item" id="${iid}" style="border-left-color:${meta.color}40"
           onclick="schedClick('${day}',${lat},${lng},'${sn}','${sc}','${sa}','${iid}')">
         <button class="sched-pick-mapbtn"
@@ -1382,7 +1382,7 @@ function renderPicksPanel(day){
       const li=inList?myCat.indexOf(inList):-1;
       const stars="★".repeat(p.stars)+"☆".repeat(5-p.stars);
       const hasPt=!!(p.lat&&p.lng);
-      const sn=p.name.replace(/'/g,"\\'"), sa=p.addr.replace(/'/g,"\\'");
+      const sn=p.name.replace(/'/g,'&#39;'), sa=p.addr.replace(/'/g,'&#39;');
       h+=`<div class="pcard${inList?" in-list":""}">
         <div class="pcard-stars">${stars}</div>
         <div class="pcard-name">${p.name}</div>
@@ -1402,7 +1402,7 @@ function renderPicksPanel(day){
       h+=`<div class="my-picks-block"><div class="my-picks-title">My Selections (${myCat.length})</div>`;
       myCat.forEach((m,li)=>{
         const opts=items.map((p,pi)=>`<option value="${pi}"${p.name===m.name?" selected":""}>${p.name}</option>`).join("");
-        const sn=m.name.replace(/'/g,"\\'"), sa=m.addr.replace(/'/g,"\\'");
+        const sn=m.name.replace(/'/g,'&#39;'), sa=m.addr.replace(/'/g,'&#39;');
         h+=`<div class="my-pick-row">
           <div class="my-pick-label"><span class="my-pick-name">${m.name}</span><span class="my-pick-cn">${m.cn}</span></div>
           <div class="my-pick-actions">
@@ -1466,7 +1466,7 @@ function routePinIcon(color,label){
 function addRoute(m,pts,col){ L.polyline(pts,{color:col,weight:3.5,dashArray:"8 5",opacity:.9}).addTo(m); }
 function routeMarker(map,pin,color){
   const{lat,lng,n,cn,en,addr,addr_cn}=pin;
-  const sn=en.replace(/'/g,"\\'"), sa=addr.replace(/'/g,"\\'");
+  const sn=en.replace(/'/g,'&#39;'), sa=addr.replace(/'/g,'&#39;');
   L.marker([lat,lng],{icon:routePinIcon(color,n)}).addTo(map).bindPopup(
     `<div style="min-width:210px;font-family:sans-serif">
       <b style="font-size:13px;color:#1a1410">${n} ${cn}</b><br>
